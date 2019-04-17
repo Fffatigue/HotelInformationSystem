@@ -3,14 +3,15 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.entities.model;
 import javax.persistence.*;
 
 import java.io.Serializable;
-
-import static javax.persistence.GenerationType.IDENTITY;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@IdClass( RoomId.class )
 @Table(name = "room")
 public class Room implements Serializable {
-
-    private Long roomId;
+    private Set<Review> reviews = new HashSet<>(  );
+    private Set<Reservation> reservations = new HashSet<>(  );
     private Floor floor;
     private Long roomNum;
     private Long capacity;
@@ -26,18 +27,12 @@ public class Room implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "ROOM_ID", unique = true, nullable = false)
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FLOOR", nullable = false)
+    @JoinColumns({
+            @JoinColumn(name = "BUILDING", nullable = false),
+            @JoinColumn(name = "FLOOR", nullable = false)
+    }
+    )
     public Floor getFloor() {
         return floor;
     }
@@ -50,6 +45,7 @@ public class Room implements Serializable {
         this.floor = floor;
     }
 
+    @Id
     @Column(name = "ROOM_NUM", nullable = false)
     public Long getRoomNum() {
         return roomNum;
@@ -76,6 +72,24 @@ public class Room implements Serializable {
 
     public void setPrice(Long price) {
         this.price = price;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room", cascade = CascadeType.ALL)
+    public Set<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "room", cascade = CascadeType.ALL)
+    public Set<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Set<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
 }

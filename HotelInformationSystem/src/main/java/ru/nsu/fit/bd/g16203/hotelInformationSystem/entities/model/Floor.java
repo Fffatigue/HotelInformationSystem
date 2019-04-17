@@ -6,13 +6,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static javax.persistence.GenerationType.IDENTITY;
-
 @Entity
+@IdClass( FloorId.class )
 @Table(name = "floor")
 public class Floor implements Serializable {
 
-    private Long floorId;
     private Building building;
     private Long floorNum;
     private Set<Room> rooms = new HashSet<Room>();
@@ -25,16 +23,6 @@ public class Floor implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "FLOOR_ID", unique = true, nullable = false)
-    public Long getFloorId() {
-        return floorId;
-    }
-
-    public void setFloorId(Long floorId) {
-        this.floorId = floorId;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUILDING", nullable = false)
     public Building getBuilding() {
@@ -45,6 +33,7 @@ public class Floor implements Serializable {
         this.building = building;
     }
 
+    @Id
     @Column(name = "FLOOR_NUM", nullable = false)
     public Long getFloorNum() {
         return floorNum;
@@ -54,7 +43,7 @@ public class Floor implements Serializable {
         this.floorNum = floorNum;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor", cascade = CascadeType.ALL)
     public Set<Room> getRooms() {
         return rooms;
     }
