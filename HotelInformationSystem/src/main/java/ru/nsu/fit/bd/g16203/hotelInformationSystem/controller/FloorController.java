@@ -31,7 +31,7 @@ public class FloorController {
     }
 
     @PostMapping
-    public Floor createRoom(@PathVariable int buildingId, @PathVariable int floorNum, @RequestBody Floor floor) throws PersistException {
+    public Floor createFloor(@PathVariable int buildingId, @PathVariable int floorNum, @RequestBody Floor floor) throws PersistException {
         FloorId floorId = new FloorId(buildingId, floorNum);
         floor.setPK(floorId);
         floor = floorService.create(floor);

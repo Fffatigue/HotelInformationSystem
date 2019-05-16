@@ -33,7 +33,7 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
 
     @Override
     public String getDeleteQuery() {
-        return "DELETE FROM room SET price = ? capacity = ? WHERE floor_num = ? and building_id = ?;";
+        return "DELETE FROM floor SET floor_num = ? and building_id = ? WHERE floor_num = ? and building_id = ?;";
     }
 
     @Override
