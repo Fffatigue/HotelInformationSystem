@@ -1,0 +1,62 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html ng-app="hotelInformationSystemApp">
+<head>
+    <title>Hotel Information System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+    <!-- SCROLLS -->
+    <!-- load bootstrap and fontawesome via CDN -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css"/>
+
+    <!-- SPELLS -->
+    <!-- load angular and angular route via CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+    <script src="script.js"></script>
+
+</head>
+<body ng-controller="mainController">
+
+<!-- HEADER AND NAVBAR -->
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="brand" href="#">Hotel Information System</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Entities
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#rooms">Rooms</a></li>
+                        <li><a href="#floors">Floors</a></li>
+                        <li><a href="#">Page 1-3</a></li>
+                    </ul>
+                </li>
+                <li><a href="#about"><i class="fa fa-shield"></i> About</a></li>
+                <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<!-- MAIN CONTENT AND INJECTED VIEWS -->
+<div>
+    <div ng-view></div>
+
+    <!-- angular templating -->
+    <!-- this is where content will be injected -->
+
+</div>
+
+</body>
+</html>

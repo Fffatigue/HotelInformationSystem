@@ -33,5 +33,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.postgresql:postgresql")
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.fasterxml.jackson:jackson-core')
+    compile('org.fasterxml.jackson:jackson-databind')
 }
 
