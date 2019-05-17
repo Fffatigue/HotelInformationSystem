@@ -51,7 +51,8 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
     protected void prepareStatementForUpdate(PreparedStatement statement, Room obj) throws SQLException {
         statement.setInt( 1, obj.getPrice() );
-        statement.setInt( 2, obj.getCapacity() );
+        statement.setInt(
+                2, obj.getCapacity() );
         statement.setInt( 3, obj.getPK().getRoomNum() );
         statement.setInt( 4, obj.getPK().getFloorId().getFloorNum() );
         statement.setInt( 5, obj.getPK().getFloorId().getBuildingId() );
