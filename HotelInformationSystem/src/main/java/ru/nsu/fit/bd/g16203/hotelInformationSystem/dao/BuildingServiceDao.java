@@ -11,7 +11,7 @@ import java.util.List;
 public class BuildingServiceDao extends AbstractJDBCDao<BuildingService, BuildingServiceId> implements IBuildingServiceDao {
     @Override
     public String getSelectQuery() {
-git         return "SELECT * FROM building_service";
+         return "SELECT * FROM building_service";
     }
 
     @Override
