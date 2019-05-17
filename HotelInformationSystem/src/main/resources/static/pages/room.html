@@ -1,22 +1,21 @@
 <!-- home.html -->
-<div id="rooms" class="container">
-    <table class="table table-striped">
-        <tr>
-            <td>
-                <p><b>Building name </b> <span data-bind="text: buildingName"></span></p>
-            </td>
-            <td>
-                <p><b>Room number </b> <span data-bind="text: roomNum"></span></p>
-            </td>
-            <td>
-                <p><b>Floor number </b> <span data-bind="text: floorNum"></span></p>
-            </td>
-            <td>
-                <p><b>Capacity </b> <span data-bind="text: capacity"></span></p>
-            </td>
-            <td>
-                <p><b>Price </b> <span data-bind="text: price"></span></p>
-            </td>
-        </tr>
-    </table>
+<div class="jumbotron text-center">
+    <p>
+    <dl>
+        <h3>Building</h3>
+        <dd data-bind="value: buildingName"></dd>
+
+        <h3>Floor</h3>
+        <dd data-bind="value: floorNum"></dd>
+
+        <h3>Room</h3>
+        <dd data-bind="value: roomNum"></dd>
+
+        <h3>Price</h3>
+        <dd data-bind="value: price"></dd>
+
+        <h3>Capacity</h3>
+        <dd data-bind="value: capacity"></dd>
+    </dl>
+    </p>
 </div>

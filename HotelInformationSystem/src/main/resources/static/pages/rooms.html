@@ -81,7 +81,7 @@
 <script>
     function RoomsViewModel() {
         var self = this;
-        self.roomsURI = 'http://localhost:8080/rooms';
+        self.roomsURI = 'http://10.9.41.232:8080/rooms';
         self.rooms = ko.observableArray();
 
         self.ajax = function (uri, method, data) {

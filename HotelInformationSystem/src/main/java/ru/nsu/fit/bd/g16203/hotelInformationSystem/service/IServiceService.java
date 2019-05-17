@@ -1,8 +1,8 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.service;
 
-import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
-import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.GenericService;
 
-@org.springframework.stereotype.Service
-public interface IServiceService extends GenericService<Service, Integer> {
+import org.springframework.stereotype.Service;
+
+@Service
+public interface IServiceService extends GenericService<ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service, Integer> {
 }

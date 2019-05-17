@@ -8,7 +8,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 import java.util.List;
 
 @org.springframework.stereotype.Service
-public class ServiceService implements IServiceDao {
+public class ServiceService implements IServiceService {
     @Autowired
     private IServiceDao serviceDao;
 

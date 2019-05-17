@@ -1,6 +1,7 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IFloorDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Floor;
@@ -8,6 +9,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 
 import java.util.List;
 
+@Service
 public class FloorService implements IFloorService {
     @Autowired
     private IFloorDao floorDao;
