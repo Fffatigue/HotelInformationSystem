@@ -1,6 +1,6 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Reservation implements Entity<Integer> {
     private Integer reservationId;
