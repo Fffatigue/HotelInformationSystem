@@ -6,34 +6,39 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IClientService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("client{clientId}")
+@RequestMapping("/clients")
 public class ClientController {
     @Autowired
     private IClientService clientService;
 
-    @RequestMapping
+    @RequestMapping("/{clientId}")
     public Client getClient(@PathVariable int clientId) throws PersistException {
         return clientService.getByPK(clientId);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{clientId}")
     public void deleteClient(@PathVariable int clientId) throws PersistException {
         clientService.delete(clientId);
     }
 
-    @PutMapping
+    @PutMapping("/{clientId}")
     public void updateClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException {
         client.setPK( clientId );
         clientService.update( client );
     }
 
-    @PostMapping
+    @PostMapping("/{clientId}")
     public Client createClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException {
         client.setPK( clientId );
         client = clientService.create( client );
         return client;
     }
 
-    //TODO сделоть
+    @RequestMapping
+    public List<Client> getClient() throws PersistException {
+        return clientService.getAll();
+    }
 }

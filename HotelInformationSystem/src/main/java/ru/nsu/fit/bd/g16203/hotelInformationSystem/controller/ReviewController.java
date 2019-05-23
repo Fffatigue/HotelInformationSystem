@@ -6,34 +6,39 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Review;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IReviewService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("review{reviewId}")
+@RequestMapping("/reviews/{reviewId}")
 public class ReviewController {
     @Autowired
     IReviewService reviewService;
 
-    @RequestMapping
+    @RequestMapping("/{reviewId}")
     public Review getReview(@PathVariable int reviewId) throws PersistException {
         return reviewService.getByPK(reviewId);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{reviewId}")
     public void deleteReview(@PathVariable int reviewId) throws PersistException {
         reviewService.delete(reviewId);
     }
 
-    @PutMapping
+    @PutMapping("/{reviewId}")
     public void updateReview (@PathVariable int reviewId, @RequestBody Review review) throws PersistException {
         review.setPK( reviewId );
         reviewService.update( review );
     }
 
-    @PostMapping
+    @PostMapping("/{reviewId}")
     public Review createReview(@PathVariable int reviewId, @RequestBody Review review) throws PersistException {
         review.setPK( reviewId );
         review = reviewService.create( review );
         return review;
     }
 
-    //TODO сделоть
+    @RequestMapping
+    public List<Review> getReviews() throws PersistException {
+        return reviewService.getAll();
+    }
 }
