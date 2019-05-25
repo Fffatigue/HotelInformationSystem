@@ -31,12 +31,12 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     public String getDeleteQuery() {
-        return "DELETE FROM building WHERE name = ? and building_id = ?;";
+        return "DELETE FROM building WHERE building_id = ?;";
     }
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE name = ? AND building_id = ?;";
+        return "WHERE building_id = ?;";
     }
 
     @Override
@@ -51,7 +51,8 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Building obj) throws SQLException {
-        statement.setString(1, obj.getName());
+        statement.setInt(1, obj.getPK());
+        statement.setString(2, obj.getName());
     }
 
     @Override

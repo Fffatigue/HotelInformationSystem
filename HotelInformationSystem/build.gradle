@@ -35,5 +35,6 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile('org.fasterxml.jackson:jackson-core')
     compile('org.fasterxml.jackson:jackson-databind')
+    compile 'org.org.hibernate.hibernate-core:5.0.7.Final'
 }
 

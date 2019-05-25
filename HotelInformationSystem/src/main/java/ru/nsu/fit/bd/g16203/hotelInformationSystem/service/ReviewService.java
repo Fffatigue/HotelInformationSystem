@@ -1,12 +1,14 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReviewDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Review;
 
 import java.util.List;
 
+@Service
 public class ReviewService implements IReviewService {
     @Autowired
     private IReviewDao reviewDao;

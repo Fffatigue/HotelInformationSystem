@@ -7,28 +7,28 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IBuildingService;
 
 @RestController
-@RequestMapping("building{buildingId}")
+@RequestMapping("/buildings")
 public class BuildingController {
     @Autowired
     private IBuildingService buildingService;
 
-    @RequestMapping("{buildingId}")
+    @GetMapping("/{buildingId}")
     public Building getBuilding(@PathVariable int buildingId) throws PersistException {
         return buildingService.getByPK(buildingId);
     }
 
-    @DeleteMapping("{buildingId}")
+    @DeleteMapping("/{buildingId}")
     public void deleteRoom(@PathVariable int buildingId) throws PersistException {
         buildingService.delete(buildingId);
     }
 
-    @PutMapping
+    @PutMapping("/{buildingId}")
     public void updateBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
         building.setPK(buildingId);
         buildingService.update(building);
     }
 
-    @PostMapping
+    @PostMapping("/{buildingId}")
     public Building createBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
         building.setPK(buildingId);
         building = buildingService.create(building);

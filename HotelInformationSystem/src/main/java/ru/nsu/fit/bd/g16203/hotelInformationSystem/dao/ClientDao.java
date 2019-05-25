@@ -20,10 +20,10 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     public String getCreateQuery() {
-        return "INSERT INTO individual (full_name, client_id) \n" +
-                "VALUES (?, ?);\n" +
-                "INSERT INTO client (client_id) \n" +
-                "VALUES (?)";
+        return  "INSERT INTO client (client_id) \n" +
+                "VALUES (?);\n" +
+                "INSERT INTO individual (full_name, client_id) \n" +
+                "VALUES (?, ?);";
     }
 
     @Override
@@ -55,8 +55,8 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Client obj) throws SQLException {
-        statement.setString(1, obj.getName());
-        statement.setInt(2, obj.getPK());
+        statement.setInt(1, obj.getPK());
+        statement.setString(2, obj.getName());
         statement.setInt(3, obj.getPK());
     }
 

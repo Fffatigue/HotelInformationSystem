@@ -14,7 +14,7 @@ public class ClientController {
     @Autowired
     private IClientService clientService;
 
-    @RequestMapping("/{clientId}")
+    @GetMapping("/{clientId}")
     public Client getClient(@PathVariable int clientId) throws PersistException {
         return clientService.getByPK(clientId);
     }
@@ -37,7 +37,7 @@ public class ClientController {
         return client;
     }
 
-    @RequestMapping
+    @GetMapping
     public List<Client> getClient() throws PersistException {
         return clientService.getAll();
     }
