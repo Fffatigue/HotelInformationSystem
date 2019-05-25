@@ -129,4 +129,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
         }
         return persistInstance;
     }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
 }

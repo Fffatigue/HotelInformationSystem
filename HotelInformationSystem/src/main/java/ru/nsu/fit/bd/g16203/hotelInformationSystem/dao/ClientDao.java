@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -76,5 +77,60 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
             clients.add(client);
         }
         return clients;
+    }
+
+    @Override
+    public Client create(Client object) throws PersistException {
+        Client persistInstance;
+        String sql = getCreateQuery();
+        try (Connection connection = super.getJdbcTemplate().getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement( sql );
+            prepareStatementForInsert( statement, object );
+            int count = statement.executeUpdate();
+            if (count != 1) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                throw new PersistException( "On create modify more then 1 record: " + count );
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+
+        sql = getSelectQuery() + "WHERE id = last_insert_id();";
+
+        try (PreparedStatement statement = super.getJdbcTemplate().getDataSource().getConnection().prepareStatement( sql )) {
+            ResultSet rs = statement.executeQuery();
+            List<Client> list = parseResultSet( rs );
+            if ((list == null) || (list.size() != 1)) {
+                throw new PersistException( "Exception on findByPK new create dao." );
+            }
+            persistInstance = list.iterator().next();
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+        return persistInstance;
+    }
+
+    @Override
+    public void delete(Integer primaryKey) throws PersistException {
+        String sql = getDeleteQuery();
+        try (Connection connection = super.getJdbcTemplate().getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement( sql );
+            prepareStatementForDelete( statement,  primaryKey);
+            int count = statement.executeUpdate();
+            if (count != 1) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                throw new PersistException( "On delete modify more then 1 record: " + count );
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
     }
 }
