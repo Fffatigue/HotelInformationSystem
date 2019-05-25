@@ -25,12 +25,12 @@ public class ClientService implements IClientService {
 
     @Override
     public void delete(Integer primaryKey) throws PersistException {
-        clientDao.delete(primaryKey);
+        clientDao.deleteTransaction(primaryKey);
     }
 
     @Override
     public Client create(Client obj) throws PersistException {
-        return clientDao.create(obj);
+        return clientDao.createTransaction(obj);
     }
 
     @Override

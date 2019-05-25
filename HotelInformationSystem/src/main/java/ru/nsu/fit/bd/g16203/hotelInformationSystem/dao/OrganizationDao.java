@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,10 +21,10 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     public String getCreateQuery() {
-        return "INSERT INTO entity (name, discount, client_id) \n" +
-                "VALUES (?, ?, ?);\n" +
-                "INSERT INTO client (client_id) \n" +
-                "VALUES (?)";
+        return  "INSERT INTO client (client_id) \n" +
+                "VALUES (?);\n" +
+                "INSERT INTO entity (name, discount, client_id) \n" +
+                "VALUES (?, ?, ?);";
     }
 
     @Override
@@ -56,9 +57,9 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Organization obj) throws SQLException {
-        statement.setString(1, obj.getName());
-        statement.setInt(2, obj.getDiscount());
-        statement.setInt(3, obj.getPK());
+        statement.setInt(1, obj.getPK());
+        statement.setString(2, obj.getName());
+        statement.setInt(3, obj.getDiscount());
         statement.setInt(4, obj.getPK());
     }
 
@@ -80,4 +81,5 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
         }
         return organizations;
     }
+
 }
