@@ -7,6 +7,8 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IOrganizationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,5 +39,15 @@ public class OrganizationService implements IOrganizationService{
     @Override
     public List<Organization> getAll(int page) throws PersistException {
         return organizationDao.getAll(page);
+    }
+
+    @Override
+    public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
+        return organizationDao.getOrganizationReservedMoreThenCountInPeriod( count,beginDate,endDate );
+    }
+
+    @Override
+    public List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException {
+        return organizationDao.getOrganizationReservedMoreThenCount( count );
     }
 }

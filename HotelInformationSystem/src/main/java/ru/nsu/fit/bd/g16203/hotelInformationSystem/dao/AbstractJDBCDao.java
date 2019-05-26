@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable> implements GenericDao<T, PK> {
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
     public abstract String getSelectQuery();
 

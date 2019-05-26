@@ -6,6 +6,8 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IOrganizationService;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -16,12 +18,12 @@ public class OrganizationController {
 
     @GetMapping("/id/{organizationId}")
     public Organization getOrganization(@PathVariable int organizationId) throws PersistException {
-        return organizationService.getByPK(organizationId);
+        return organizationService.getByPK( organizationId );
     }
 
     @DeleteMapping("/id/{organizationId}")
     public void deleteOrganization(@PathVariable int organizationId) throws PersistException {
-        organizationService.delete(organizationId);
+        organizationService.delete( organizationId );
     }
 
     @PutMapping("/id/{organizationId}")
@@ -36,8 +38,17 @@ public class OrganizationController {
         return organization;
     }
 
+    @GetMapping("/report")
+    public List<Organization> getReport(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
+        if (beginDate != null && endDate != null) {
+            return organizationService.getOrganizationReservedMoreThenCountInPeriod( count, beginDate, endDate );
+        } else {
+            return organizationService.getOrganizationReservedMoreThenCount( count );
+        }
+    }
+
     @GetMapping("/page/{page}")
     public List<Organization> getOrganizations(@PathVariable int page) throws PersistException {
-        return organizationService.getAll(page);
+        return organizationService.getAll( page );
     }
 }
