@@ -40,25 +40,32 @@ public class ServiceDao extends AbstractJDBCDao<Service, Integer> implements ISe
     }
 
     @Override
+    protected  String idStatement(){
+        return "service_id";
+    }
+
+    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        //No get in Integer class in PK
+        statement.setInt(1, primaryKey);
     }
 
     @Override
     protected void prepareStatementForUpdate(PreparedStatement statement, Service obj) throws SQLException {
         statement.setInt(1, obj.getPrice());
         statement.setString(2, obj.getName());
+        statement.setInt(3, obj.getPK());
     }
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Service obj) throws SQLException {
-        statement.setInt(1, obj.getPrice());
+        statement.setInt(1, obj.getPK());
         statement.setString(2, obj.getName());
+        statement.setInt(3, obj.getPrice());
     }
 
     @Override
     protected void prepareStatementForDelete(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        //No get in Integer class for PK
+        statement.setInt(1, primaryKey);
     }
 
     @Override
@@ -66,11 +73,11 @@ public class ServiceDao extends AbstractJDBCDao<Service, Integer> implements ISe
         List<Service> services = new ArrayList<>();
         while (rs.next()) {
             Service service = new Service();
-            Integer serviceId = null;
+            Integer serviceId = rs.getInt("service_id");
             service.setPK(serviceId);
-            services.add(service);
             service.setPrice(rs.getInt("price"));
             service.setName(rs.getString("name"));
+            services.add(service);
         }
         return services;
     }

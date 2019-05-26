@@ -42,6 +42,11 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
     }
 
     @Override
+    protected String idStatement(){  //TODO
+        return "id";
+    }
+
+    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, FloorId primaryKey) throws SQLException {
         statement.setInt(1, primaryKey.getFloorNum());
         statement.setInt(2, primaryKey.getBuildingId());

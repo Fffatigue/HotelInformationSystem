@@ -42,6 +42,11 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     }
 
     @Override
+    protected  String idStatement(){
+        return "id";
+    }
+
+    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, RoomId primaryKey) throws SQLException {
         statement.setInt( 1, primaryKey.getRoomNum() );
         statement.setInt( 2, primaryKey.getFloorId().getBuildingId() );

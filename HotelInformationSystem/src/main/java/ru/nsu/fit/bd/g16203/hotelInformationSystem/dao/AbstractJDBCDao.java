@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Entity;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,6 +28,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     public abstract String getDeleteQuery();
 
     protected abstract String getIdComparisionStatementPart();
+
+    protected abstract String idStatement();
 
     protected abstract void prepareStatementForGetByPK(PreparedStatement statement, PK primaryKey) throws SQLException;
 
@@ -103,8 +106,6 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     @Override
     public T create(T object) throws PersistException {
-        T persistInstance;
-
         String sql = getCreateQuery();
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
             prepareStatementForInsert( statement, object );
@@ -116,7 +117,33 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
             throw new PersistException( e );
         }
 
-        sql = getSelectQuery() + "WHERE id = last_insert_id();";
+        return getCreatedObject();
+    }
+
+    @Override
+    public T createTransaction(T object) throws PersistException {
+        String sql = getCreateQuery();
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement( sql );
+            prepareStatementForInsert( statement, object );
+            int count = statement.executeUpdate();
+            if (count != 1) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                throw new PersistException( "On create modify more then 1 record: " + count );
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+        return getCreatedObject();
+    }
+
+    private T getCreatedObject() throws PersistException {
+        T persistInstance;
+        String sql = getSelectQuery() + " WHERE " + idStatement() + " = last_insert_id();";  //TODO ошибка
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
             ResultSet rs = statement.executeQuery();
             List<T> list = parseResultSet( rs );
@@ -130,7 +157,24 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
         return persistInstance;
     }
 
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
+    @Override
+    public void deleteTransaction(PK primaryKey) throws PersistException {
+        String sql = getDeleteQuery();
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement( sql );
+            prepareStatementForDelete( statement,  primaryKey);
+            int count = statement.executeUpdate();
+            if (count != 1) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                throw new PersistException( "On delete modify more then 1 record: " + count );
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+
     }
 }

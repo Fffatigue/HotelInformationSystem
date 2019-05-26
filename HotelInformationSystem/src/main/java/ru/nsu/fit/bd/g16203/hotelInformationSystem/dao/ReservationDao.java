@@ -42,8 +42,13 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     }
 
     @Override
+    protected  String idStatement(){
+        return "reservation_id";
+    }
+
+    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        statement.setInt( 1, primaryKey );
+        statement.setInt(1, primaryKey);
     }
 
     @Override

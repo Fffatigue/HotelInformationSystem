@@ -14,4 +14,8 @@ public interface GenericDao<T extends Entity, PK> {
     public List<T> getAll() throws PersistException;
 
     public T create(T obj) throws PersistException;
+
+    public T createTransaction(T object) throws PersistException;
+
+    public void deleteTransaction(PK primaryKey) throws PersistException;
 }
