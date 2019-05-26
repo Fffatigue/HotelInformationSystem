@@ -28,7 +28,7 @@ public class RoomController {
         roomService.delete( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
     }
 
-    @DeleteMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
+    @PutMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
     public void updateRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException {
         room.setPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
         roomService.update( room );

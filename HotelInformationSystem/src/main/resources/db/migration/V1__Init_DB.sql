@@ -98,4 +98,5 @@ CREATE TABLE review
   reservation_id INT NOT NULL,
   PRIMARY KEY (review_id),
   FOREIGN KEY (reservation_id) REFERENCES reservation(reservation_id) ON DELETE CASCADE
+
 );

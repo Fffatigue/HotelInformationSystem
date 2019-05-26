@@ -36,6 +36,6 @@ public class RoomService implements IRoomService {
 
     @Override
     public List<Room> getAll(int page) throws PersistException {
-        return roomDao.getAll(page);
+        return roomDao.getAll( page );
     }
 }
