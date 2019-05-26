@@ -38,7 +38,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE room_num = ? AND building_id = ? AND floor_num = ?;";
+        return " WHERE room_num = ? AND building_id = ? AND floor_num = ?;";
     }
 
     @Override

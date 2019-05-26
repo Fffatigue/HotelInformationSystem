@@ -38,7 +38,7 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE reservation_id = ?;";
+        return " WHERE reservation_id = ?;";
     }
 
     @Override
