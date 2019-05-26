@@ -6,32 +6,39 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IServiceService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("service{serviceId}/")
+@RequestMapping("/services")
 public class ServiceController {
     @Autowired
     private IServiceService serviceService;
 
-    @RequestMapping("{serviceId}")
+    @RequestMapping("/id/{serviceId}")
     public Service getService(@PathVariable int serviceId) throws PersistException {
         return serviceService.getByPK(serviceId);
     }
 
-    @DeleteMapping("{serviceId}")
+    @DeleteMapping("/id/{serviceId}")
     public void deleteService(@PathVariable int serviceId) throws PersistException {
         serviceService.delete(serviceId);
     }
 
-    @PutMapping
+    @PutMapping("/id/{serviceId}")
     public void updateService(@PathVariable int serviceId, @RequestBody Service service) throws PersistException {
         service.setPK(serviceId);
         serviceService.update(service);
     }
 
-    @PostMapping
+    @PostMapping("/id/{serviceId}")
     public Service createRoom(@PathVariable int serviceId, @RequestBody Service service) throws PersistException {
         service.setPK(serviceId);
         serviceService.create(service);
         return service;
+    }
+
+    @RequestMapping("/page/{page}")
+    public List<Service> getServices(@PathVariable int page) throws PersistException {
+        return serviceService.getAll(page);
     }
 }
