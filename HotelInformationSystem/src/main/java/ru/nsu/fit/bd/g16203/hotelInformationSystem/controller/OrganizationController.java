@@ -14,17 +14,17 @@ public class OrganizationController {
     @Autowired
     private IOrganizationService organizationService;
 
-    @GetMapping("/{organizationId}")
+    @GetMapping("/id/{organizationId}")
     public Organization getOrganization(@PathVariable int organizationId) throws PersistException {
         return organizationService.getByPK(organizationId);
     }
 
-    @DeleteMapping("/{organizationId}")
+    @DeleteMapping("/id/{organizationId}")
     public void deleteOrganization(@PathVariable int organizationId) throws PersistException {
         organizationService.delete(organizationId);
     }
 
-    @PutMapping("/{organizationId}")
+    @PutMapping("/id/{organizationId}")
     public void updateOrganization(@PathVariable int organizationId, @RequestBody Organization organization) throws PersistException {
         organization.setPK( organizationId );
         organizationService.update( organization );
@@ -36,8 +36,8 @@ public class OrganizationController {
         return organization;
     }
 
-    @GetMapping
-    public List<Organization> getOrganizations(int page) throws PersistException {
+    @GetMapping("/page/{page}")
+    public List<Organization> getOrganizations(@PathVariable int page) throws PersistException {
         return organizationService.getAll(page);
     }
 }

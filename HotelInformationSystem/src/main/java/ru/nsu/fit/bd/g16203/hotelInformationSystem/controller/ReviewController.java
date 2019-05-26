@@ -9,36 +9,36 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IReviewService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reviews/{reviewId}")
+@RequestMapping("/reviews")
 public class ReviewController {
     @Autowired
     IReviewService reviewService;
 
-    @RequestMapping("/{reviewId}")
+    @RequestMapping("/id/{reviewId}")
     public Review getReview(@PathVariable int reviewId) throws PersistException {
         return reviewService.getByPK(reviewId);
     }
 
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/id/{reviewId}")
     public void deleteReview(@PathVariable int reviewId) throws PersistException {
         reviewService.delete(reviewId);
     }
 
-    @PutMapping("/{reviewId}")
+    @PutMapping("/id/{reviewId}")
     public void updateReview (@PathVariable int reviewId, @RequestBody Review review) throws PersistException {
         review.setPK( reviewId );
         reviewService.update( review );
     }
 
-    @PostMapping("/{reviewId}")
+    @PostMapping("/id/{reviewId}")
     public Review createReview(@PathVariable int reviewId, @RequestBody Review review) throws PersistException {
         review.setPK( reviewId );
         reviewService.create( review );
         return review;
     }
 
-    @RequestMapping
-    public List<Review> getReviews(int page) throws PersistException {
+    @RequestMapping("page/{page}")
+    public List<Review> getReviews(@PathVariable int page) throws PersistException {
         return reviewService.getAll(page);
     }
 }

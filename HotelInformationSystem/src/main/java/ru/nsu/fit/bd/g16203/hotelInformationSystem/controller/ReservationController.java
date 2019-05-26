@@ -14,31 +14,31 @@ public class ReservationController {
     @Autowired
     private IReservationService reservationService;
 
-    @RequestMapping("/{reservationId}")
+    @RequestMapping("/id/{reservationId}")
     public Reservation getReservation(@PathVariable int reservationId) throws PersistException {
         return reservationService.getByPK(reservationId);
     }
 
-    @DeleteMapping("/{reservationId}")
+    @DeleteMapping("/id/{reservationId}")
     public void deleteReservation(@PathVariable int reservationId) throws PersistException {
         reservationService.delete(reservationId);
     }
 
-    @PutMapping("/{reservationId}")
+    @PutMapping("/id/{reservationId}")
     public void updateReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
         reservation.setPK( reservationId );
         reservationService.update( reservation );
     }
 
-    @PostMapping("/{reservationId}")
+    @PostMapping("/id/{reservationId}")
     public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
         reservation.setPK( reservationId );
         reservationService.create( reservation );
         return reservation;
     }
 
-    @RequestMapping
-    public List<Reservation> getReservations(int page) throws PersistException {
+    @RequestMapping("/page/{page}")
+    public List<Reservation> getReservations(@PathVariable int page) throws PersistException {
         return reservationService.getAll(page);
     }
 }
