@@ -6,6 +6,8 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IClientService;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -16,12 +18,12 @@ public class ClientController {
 
     @GetMapping("/id/{clientId}")
     public Client getClient(@PathVariable int clientId) throws PersistException {
-        return clientService.getByPK(clientId);
+        return clientService.getByPK( clientId );
     }
 
     @DeleteMapping("/id/{clientId}")
     public void deleteClient(@PathVariable int clientId) throws PersistException {
-        clientService.delete(clientId);
+        clientService.delete( clientId );
     }
 
     @PutMapping("/id/{clientId}")
@@ -38,6 +40,11 @@ public class ClientController {
 
     @GetMapping("/page/{page}")
     public List<Client> getClients(@PathVariable int page) throws PersistException {
-        return clientService.getAll(page);
+        return clientService.getAll( page );
+    }
+
+    @GetMapping("/report")
+    public List<Client> getReport(int price, int capacity, Date beginDate, Date endDate) throws PersistException, SQLException {
+        return clientService.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
     }
 }

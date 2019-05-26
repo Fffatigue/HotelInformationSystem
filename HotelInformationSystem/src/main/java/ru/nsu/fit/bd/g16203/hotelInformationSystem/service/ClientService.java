@@ -6,6 +6,8 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IClientDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,26 +17,31 @@ public class ClientService implements IClientService {
 
     @Override
     public Client getByPK(Integer primaryKey) throws PersistException {
-        return clientDao.getByPK(primaryKey);
+        return clientDao.getByPK( primaryKey );
     }
 
     @Override
     public void update(Client obj) throws PersistException {
-        clientDao.update(obj);
+        clientDao.update( obj );
     }
 
     @Override
     public void delete(Integer primaryKey) throws PersistException {
-        clientDao.deleteTransaction(primaryKey);
+        clientDao.deleteTransaction( primaryKey );
     }
 
     @Override
     public void create(Client obj) throws PersistException {
-        clientDao.createTransaction(obj);
+        clientDao.createTransaction( obj );
     }
 
     @Override
     public List<Client> getAll(int page) throws PersistException {
-        return clientDao.getAll(page);
+        return clientDao.getAll( page );
+    }
+
+    @Override
+    public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, Date beginDate, Date endDate) throws PersistException, SQLException {
+        return clientDao.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
     }
 }
