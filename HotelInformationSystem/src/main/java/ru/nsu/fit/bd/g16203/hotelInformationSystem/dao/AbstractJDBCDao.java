@@ -29,6 +29,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     protected abstract String getIdComparisionStatementPart();
 
+    protected abstract String idStatement();
+
     protected abstract void prepareStatementForGetByPK(PreparedStatement statement, PK primaryKey) throws SQLException;
 
     protected abstract void prepareStatementForUpdate(PreparedStatement statement, T obj) throws SQLException;
@@ -141,7 +143,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     private T getCreatedObject() throws PersistException {
         T persistInstance;
-        String sql = getSelectQuery() + "WHERE id = last_insert_id();";
+        String sql = getSelectQuery() + " WHERE " + idStatement() + " = last_insert_id();";  //TODO ошибка
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
             ResultSet rs = statement.executeQuery();
             List<T> list = parseResultSet( rs );

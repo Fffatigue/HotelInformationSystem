@@ -14,7 +14,7 @@ public class OrganizationController {
     @Autowired
     private IOrganizationService organizationService;
 
-    @RequestMapping("/{organizationId}")
+    @GetMapping("/{organizationId}")
     public Organization getOrganization(@PathVariable int organizationId) throws PersistException {
         return organizationService.getByPK(organizationId);
     }
@@ -37,7 +37,7 @@ public class OrganizationController {
         return organization;
     }
 
-    @RequestMapping
+    @GetMapping
     public List<Organization> getOrganizations() throws PersistException {
         return organizationService.getAll();
     }

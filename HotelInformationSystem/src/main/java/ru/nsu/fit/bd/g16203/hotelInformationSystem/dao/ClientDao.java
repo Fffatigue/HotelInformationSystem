@@ -44,6 +44,11 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
     }
 
     @Override
+    protected String idStatement(){
+        return "client_id";
+    }
+
+    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
         statement.setInt(1, primaryKey);
     }

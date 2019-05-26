@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,7 +39,12 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE client_id = ?;";
+        return " WHERE client_id = ?;";
+    }
+
+    @Override
+    protected String idStatement(){
+        return "client_id";
     }
 
     @Override

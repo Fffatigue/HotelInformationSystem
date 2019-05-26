@@ -30,7 +30,7 @@ public class BuildingController {
 
     @PostMapping("/{buildingId}")
     public Building createBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
-        building.setPK(buildingId);
+        building.setPK(null);//buildingId);
         building = buildingService.create(building);
         return building;
     }
