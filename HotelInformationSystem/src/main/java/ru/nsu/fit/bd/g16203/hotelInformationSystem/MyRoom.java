@@ -6,6 +6,24 @@ public class MyRoom implements Serializable {
     int roomNum = 5;
     int floorNum = 10;
     String buildingName = "eee";
+    int price = 100;
+    int capacity = 200;
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 
     public int getRoomNum() {
         return roomNum;

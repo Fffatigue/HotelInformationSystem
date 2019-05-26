@@ -34,7 +34,7 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public List<Review> getAll() throws PersistException {
-        return reviewDao.getAll();
+    public List<Review> getAll(int page) throws PersistException {
+        return reviewDao.getAll(page);
     }
 }

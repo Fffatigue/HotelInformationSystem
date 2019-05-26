@@ -38,7 +38,7 @@ app.controller('mainController', function ($scope) {
 
 
 app.controller('roomController', function ($scope, $routeParams) {
-    $scope.buildingName = $routeParams.buildingName.toString();
+    $scope.buildingName = $routeParams.buildingName;
     $scope.floorNum = $routeParams.floorNum;
     $scope.roomNum = $routeParams.roomNum;
 });

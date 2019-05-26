@@ -81,7 +81,7 @@
 <script>
     function RoomsViewModel() {
         var self = this;
-        self.roomsURI = 'http://10.9.41.232:8080/rooms';
+        self.roomsURI = 'http://localhost:8080/rooms';
         self.rooms = ko.observableArray();
 
         self.ajax = function (uri, method, data) {
@@ -102,6 +102,9 @@
         }
 
         self.beginDetails = function(room){
+            localStorage.setItem("buildingName", room.buildingName());
+            localStorage.setItem("floorNum", room.floorNum());
+            localStorage.setItem("roomNum", room.roomNum());
             var href = '#building/'+room.buildingName()+'/floor/' + room.floorNum() + '/room/' + room.roomNum();
             window.location = href
         }
@@ -162,6 +165,6 @@
 
     var roomsViewModel = new RoomsViewModel();
     var addRoomViewModel = new AddRoomViewModel();
-    ko.applyBindings(roomsViewModel, $('#main')[0]);
+    ko.applyBindings(roomsViewModel, $('#rooms')[0]);
     ko.applyBindings(addRoomViewModel, $('#add')[0]);
 </script>

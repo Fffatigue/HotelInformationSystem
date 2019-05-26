@@ -13,5 +13,5 @@ public interface GenericService<T, PK> {
 
     public void create(T obj) throws PersistException;
 
-    public List<T> getAll() throws PersistException;
+    public List<T> getAll(int page) throws PersistException;
 }

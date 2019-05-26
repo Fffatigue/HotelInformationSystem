@@ -14,17 +14,17 @@ public class ClientController {
     @Autowired
     private IClientService clientService;
 
-    @GetMapping("/{clientId}")
+    @GetMapping("/id/{clientId}")
     public Client getClient(@PathVariable int clientId) throws PersistException {
         return clientService.getByPK(clientId);
     }
 
-    @DeleteMapping("/{clientId}")
+    @DeleteMapping("/id/{clientId}")
     public void deleteClient(@PathVariable int clientId) throws PersistException {
         clientService.delete(clientId);
     }
 
-    @PutMapping("/{clientId}")
+    @PutMapping("/id/{clientId}")
     public void updateClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException {
         client.setPK( clientId );
         clientService.update( client );
@@ -36,8 +36,8 @@ public class ClientController {
         return client;
     }
 
-    @GetMapping
-    public List<Client> getClient() throws PersistException {
-        return clientService.getAll();
+    @GetMapping("/page/{page}")
+    public List<Client> getClients(@PathVariable int page) throws PersistException {
+        return clientService.getAll(page);
     }
 }

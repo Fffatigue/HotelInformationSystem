@@ -29,12 +29,12 @@ public class RoomController {
         //return new LinkedList<>(  )MyRoom();
     }
 
-  /*  @RequestMapping
-    public MyRoom getRoom(int buildingId, int floorNum, int roomNum) throws PersistException {
+    @GetMapping("building/{buildingName}/floor/{floorNum}/room/{roomNum}")
+    public MyRoom getRoom(@PathVariable String buildingName, @PathVariable int floorNum, @PathVariable int roomNum) throws PersistException {
         return new MyRoom();
        // return roomService.getByPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
     }
-    */
+
 
     @DeleteMapping
     public void deleteRoom(int buildingId, int floorNum, int roomNum) throws PersistException {

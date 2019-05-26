@@ -61,9 +61,9 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public List<T> getAll() throws PersistException {
+    public List<T> getAll(int page) throws PersistException {
         List<T> list;
-        String sql = getSelectQuery();
+        String sql = getSelectQuery() + " LIMIT 5 OFFSET " + String.valueOf( (page - 1) * 5 );
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
             ResultSet rs = statement.executeQuery();
             list = parseResultSet( rs );
@@ -92,7 +92,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     public void delete(PK primaryKey) throws PersistException {
         String sql = getDeleteQuery();
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
-            prepareStatementForDelete( statement,  primaryKey);
+            prepareStatementForDelete( statement, primaryKey );
             int count = statement.executeUpdate();
             if (count != 1) {
                 throw new PersistException( "On delete modify more then 1 record: " + count );
@@ -120,17 +120,17 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     public void createTransaction(T object) throws PersistException {
         String sql = getCreateQuery();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
+            connection.setAutoCommit( false );
             PreparedStatement statement = connection.prepareStatement( sql );
             prepareStatementForInsert( statement, object );
             int count = statement.executeUpdate();
             if (count != 1) {
                 connection.rollback();
-                connection.setAutoCommit(true);
+                connection.setAutoCommit( true );
                 throw new PersistException( "On create modify more then 1 record: " + count );
             }
             connection.commit();
-            connection.setAutoCommit(true);
+            connection.setAutoCommit( true );
         } catch (Exception e) {
             throw new PersistException( e );
         }
@@ -140,17 +140,17 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     public void deleteTransaction(PK primaryKey) throws PersistException {
         String sql = getDeleteQuery();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            connection.setAutoCommit(false);
+            connection.setAutoCommit( false );
             PreparedStatement statement = connection.prepareStatement( sql );
-            prepareStatementForDelete( statement,  primaryKey);
+            prepareStatementForDelete( statement, primaryKey );
             int count = statement.executeUpdate();
             if (count != 1) {
                 connection.rollback();
-                connection.setAutoCommit(true);
+                connection.setAutoCommit( true );
                 throw new PersistException( "On delete modify more then 1 record: " + count );
             }
             connection.commit();
-            connection.setAutoCommit(true);
+            connection.setAutoCommit( true );
         } catch (Exception e) {
             throw new PersistException( e );
         }

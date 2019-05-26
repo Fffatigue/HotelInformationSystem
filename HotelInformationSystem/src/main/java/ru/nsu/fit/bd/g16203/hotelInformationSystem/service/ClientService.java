@@ -34,7 +34,7 @@ public class ClientService implements IClientService {
     }
 
     @Override
-    public List<Client> getAll() throws PersistException {
-        return clientDao.getAll();
+    public List<Client> getAll(int page) throws PersistException {
+        return clientDao.getAll(page);
     }
 }

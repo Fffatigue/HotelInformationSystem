@@ -37,7 +37,7 @@ public class OrganizationController {
     }
 
     @GetMapping
-    public List<Organization> getOrganizations() throws PersistException {
-        return organizationService.getAll();
+    public List<Organization> getOrganizations(int page) throws PersistException {
+        return organizationService.getAll(page);
     }
 }

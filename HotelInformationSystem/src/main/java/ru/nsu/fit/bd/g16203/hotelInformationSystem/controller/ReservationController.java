@@ -38,7 +38,7 @@ public class ReservationController {
     }
 
     @RequestMapping
-    public List<Reservation> getReservations() throws PersistException {
-        return reservationService.getAll();
+    public List<Reservation> getReservations(int page) throws PersistException {
+        return reservationService.getAll(page);
     }
 }

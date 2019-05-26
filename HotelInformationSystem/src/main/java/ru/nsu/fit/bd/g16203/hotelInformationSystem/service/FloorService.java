@@ -35,7 +35,7 @@ public class FloorService implements IFloorService {
     }
 
     @Override
-    public List<Floor> getAll() throws PersistException {
-        return floorDao.getAll();
+    public List<Floor> getAll(int page) throws PersistException {
+        return floorDao.getAll(page);
     }
 }

@@ -14,17 +14,17 @@ public class BuildingController {
     @Autowired
     private IBuildingService buildingService;
 
-    @GetMapping("/{buildingId}")
+    @GetMapping("/id/{buildingId}")
     public Building getBuilding(@PathVariable int buildingId) throws PersistException {
         return buildingService.getByPK(buildingId);
     }
 
-    @DeleteMapping("/{buildingId}")
+    @DeleteMapping("/id/{buildingId}")
     public void deleteRoom(@PathVariable int buildingId) throws PersistException {
         buildingService.delete(buildingId);
     }
 
-    @PutMapping("/{buildingId}")
+    @PutMapping("/id/{buildingId}")
     public void updateBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
         building.setPK(buildingId);
         buildingService.update(building);
@@ -36,8 +36,8 @@ public class BuildingController {
         return building;
     }
 
-    @GetMapping
-    public List<Building> getBuildings() throws PersistException {
-        return buildingService.getAll();
+    @GetMapping("/page/{page}")
+    public List<Building> getBuildings(@PathVariable int page) throws PersistException {
+        return buildingService.getAll(page);
     }
 }

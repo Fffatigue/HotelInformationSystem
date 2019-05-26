@@ -35,7 +35,7 @@ public class BuildingService implements IBuildingService{
     }
 
     @Override
-    public List<Building> getAll() throws PersistException {
-        return buildingDao.getAll();
+    public List<Building> getAll(int page) throws PersistException {
+        return buildingDao.getAll(page);
     }
 }

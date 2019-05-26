@@ -35,7 +35,7 @@ public class OrganizationService implements IOrganizationService{
     }
 
     @Override
-    public List<Organization> getAll() throws PersistException {
-        return organizationDao.getAll();
+    public List<Organization> getAll(int page) throws PersistException {
+        return organizationDao.getAll(page);
     }
 }

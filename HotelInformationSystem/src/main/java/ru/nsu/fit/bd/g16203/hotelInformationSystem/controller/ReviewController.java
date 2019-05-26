@@ -38,7 +38,7 @@ public class ReviewController {
     }
 
     @RequestMapping
-    public List<Review> getReviews() throws PersistException {
-        return reviewService.getAll();
+    public List<Review> getReviews(int page) throws PersistException {
+        return reviewService.getAll(page);
     }
 }

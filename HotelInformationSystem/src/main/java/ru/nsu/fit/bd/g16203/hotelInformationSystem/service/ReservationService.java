@@ -34,7 +34,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<Reservation> getAll() throws PersistException {
-        return reservationDao.getAll();
+    public List<Reservation> getAll(int page) throws PersistException {
+        return reservationDao.getAll(page);
     }
 }

@@ -1,21 +1,32 @@
 <!-- home.html -->
 <div class="jumbotron text-center">
-    <p>
     <dl>
-        <h3>Building</h3>
-        <dd data-bind="value: buildingName"></dd>
+        <p style="font-size: 30px"><b>Building : </b><span data-bind="text: buildingName"></span></p>
 
-        <h3>Floor</h3>
-        <dd data-bind="value: floorNum"></dd>
+        <p style="font-size: 30px"><b>Floor : </b><span data-bind="text: floorNum"></span></p>
 
-        <h3>Room</h3>
-        <dd data-bind="value: roomNum"></dd>
+        <p style="font-size: 30px"><b>Room : </b><span data-bind="text: roomNum"></span></p>
 
-        <h3>Price</h3>
-        <dd data-bind="value: price"></dd>
+        <p style="font-size: 30px"><b>Capacity : </b><span data-bind="text: capacity"></span></p>
 
-        <h3>Capacity</h3>
-        <dd data-bind="value: capacity"></dd>
+        <p style="font-size: 30px"><b>Price : </b><span data-bind="text: price"></span></p>
     </dl>
-    </p>
 </div>
+
+<script>
+
+    function getData() {
+        return $.ajax({
+            url: "http://localhost:8080/rooms/building/" + localStorage.getItem("buildingName") + "/floor/"
+                + localStorage.getItem("floorNum") + "/room/" + localStorage.getItem("roomNum"),
+            type: 'GET'
+        });
+    }
+
+    function handleData(data) {
+        ko.status = ko.observable(data.rows);
+        ko.applyBindings(data)
+    }
+
+    getData().done(handleData);
+</script>

@@ -33,7 +33,7 @@ public class ServiceService implements IServiceService {
     }
 
     @Override
-    public List<Service> getAll() throws PersistException {
-        return serviceDao.getAll();
+    public List<Service> getAll(int page) throws PersistException {
+        return serviceDao.getAll(page);
     }
 }
