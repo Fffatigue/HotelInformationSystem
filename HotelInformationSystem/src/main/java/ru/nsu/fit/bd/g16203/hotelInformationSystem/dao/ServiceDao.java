@@ -36,7 +36,7 @@ public class ServiceDao extends AbstractJDBCDao<Service, Integer> implements ISe
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE service_id = ?;";
+        return " WHERE service_id = ?;";
     }
 
     @Override

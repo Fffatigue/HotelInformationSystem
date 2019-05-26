@@ -36,7 +36,7 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE review_id = ?;";
+        return " WHERE review_id = ?;";
     }
 
     @Override

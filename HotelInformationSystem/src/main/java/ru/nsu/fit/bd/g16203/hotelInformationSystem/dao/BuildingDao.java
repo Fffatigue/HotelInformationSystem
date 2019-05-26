@@ -36,7 +36,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE building_id = ?;";
+        return " WHERE building_id = ?;";
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     protected void prepareStatementForDelete(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        statement.setNull(1, primaryKey);
+        statement.setInt(1, primaryKey);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
         List<Building> buildings = new ArrayList<>();
         while (rs.next()) {
             Building building = new Building();
-            Integer buildingId = null;
+            Integer buildingId = rs.getInt("building_id");
             building.setPK(buildingId);
             buildings.add(building);
             building.setName(rs.getString("name"));
