@@ -6,6 +6,8 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IBuildingService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/buildings")
 public class BuildingController {
@@ -28,10 +30,14 @@ public class BuildingController {
         buildingService.update(building);
     }
 
-    @PostMapping("/{buildingId}")
-    public Building createBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
-        building.setPK(null);//buildingId);
-        building = buildingService.create(building);
+    @PostMapping
+    public Building createBuilding(@RequestBody Building building) throws PersistException {
+        buildingService.create(building);
         return building;
+    }
+
+    @GetMapping
+    public List<Building> getBuildings() throws PersistException {
+        return buildingService.getAll();
     }
 }

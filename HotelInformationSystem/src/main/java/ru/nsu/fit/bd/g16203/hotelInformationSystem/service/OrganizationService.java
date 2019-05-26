@@ -30,8 +30,8 @@ public class OrganizationService implements IOrganizationService{
     }
 
     @Override
-    public Organization create(Organization obj) throws PersistException {
-        return organizationDao.create(obj);
+    public void create(Organization obj) throws PersistException {
+        organizationDao.create(obj);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room create(Room obj) throws PersistException {
-        return roomDao.create( obj );
+    public void create(Room obj) throws PersistException {
+        roomDao.create( obj );
     }
 
     @Override

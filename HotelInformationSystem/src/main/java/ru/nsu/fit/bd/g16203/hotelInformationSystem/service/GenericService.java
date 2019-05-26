@@ -11,7 +11,7 @@ public interface GenericService<T, PK> {
 
     public void delete(PK primaryKey) throws PersistException;
 
-    public T create(T obj) throws PersistException;
+    public void create(T obj) throws PersistException;
 
     public List<T> getAll() throws PersistException;
 }

@@ -26,7 +26,7 @@ public class ServiceDao extends AbstractJDBCDao<Service, Integer> implements ISe
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE service SET price = ? name = ? WHERE service_id = ?;";
+        return "UPDATE service SET price = ?, name = ? WHERE service_id = ?;";
     }
 
     @Override
@@ -37,11 +37,6 @@ public class ServiceDao extends AbstractJDBCDao<Service, Integer> implements ISe
     @Override
     protected String getIdComparisionStatementPart() {
         return "WHERE service_id = ?;";
-    }
-
-    @Override
-    protected  String idStatement(){
-        return "service_id";
     }
 
     @Override

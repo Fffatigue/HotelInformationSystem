@@ -20,8 +20,8 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     public String getCreateQuery() {
-        return "INSERT INTO building ( building_id, name) \n" +
-                "VALUES (?, ?);";
+        return "INSERT INTO building (name) \n" +
+                "VALUES (?);";
     }
 
     @Override
@@ -40,11 +40,6 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
     }
 
     @Override
-    protected String idStatement(){
-        return "building_id";
-    }
-
-    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
         statement.setInt(1, primaryKey);
     }
@@ -57,8 +52,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Building obj) throws SQLException {
-        statement.setNull(1, obj.getPK());
-        statement.setString(2, obj.getName());
+        statement.setString(1, obj.getName());
     }
 
     @Override

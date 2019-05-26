@@ -28,7 +28,7 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE floor SET building_id = ? floor_num = ? WHERE floor_num = ? and building_id = ?;";
+        return "UPDATE floor SET building_id = ?, floor_num = ? WHERE floor_num = ? and building_id = ?;";
     }
 
     @Override
@@ -39,11 +39,6 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
     @Override
     protected String getIdComparisionStatementPart() {
         return "WHERE floor_num = ? AND building_id = ?;";
-    }
-
-    @Override
-    protected String idStatement(){  //TODO
-        return "id";
     }
 
     @Override

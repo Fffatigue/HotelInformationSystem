@@ -30,8 +30,8 @@ public class BuildingService implements IBuildingService{
     }
 
     @Override
-    public Building create(Building obj) throws PersistException {
-        return buildingDao.create(obj);
+    public void create(Building obj) throws PersistException {
+        buildingDao.create(obj);
     }
 
     @Override

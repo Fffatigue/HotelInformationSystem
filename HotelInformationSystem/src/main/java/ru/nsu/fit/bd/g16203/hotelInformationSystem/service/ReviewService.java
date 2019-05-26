@@ -29,8 +29,8 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public Review create(Review obj) throws PersistException {
-        return reviewDao.create(obj);
+    public void create(Review obj) throws PersistException {
+        reviewDao.create(obj);
     }
 
     @Override

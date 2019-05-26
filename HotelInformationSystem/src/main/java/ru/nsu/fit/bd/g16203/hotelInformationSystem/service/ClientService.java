@@ -29,8 +29,8 @@ public class ClientService implements IClientService {
     }
 
     @Override
-    public Client create(Client obj) throws PersistException {
-        return clientDao.createTransaction(obj);
+    public void create(Client obj) throws PersistException {
+        clientDao.createTransaction(obj);
     }
 
     @Override
