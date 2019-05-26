@@ -29,8 +29,6 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     protected abstract String getIdComparisionStatementPart();
 
-    protected abstract String idStatement();
-
     protected abstract void prepareStatementForGetByPK(PreparedStatement statement, PK primaryKey) throws SQLException;
 
     protected abstract void prepareStatementForUpdate(PreparedStatement statement, T obj) throws SQLException;
@@ -105,7 +103,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public T create(T object) throws PersistException {
+    public void create(T object) throws PersistException {
         String sql = getCreateQuery();
         try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
             prepareStatementForInsert( statement, object );
@@ -116,12 +114,10 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
         } catch (Exception e) {
             throw new PersistException( e );
         }
-
-        return getCreatedObject();
     }
 
     @Override
-    public T createTransaction(T object) throws PersistException {
+    public void createTransaction(T object) throws PersistException {
         String sql = getCreateQuery();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             connection.setAutoCommit(false);
@@ -138,23 +134,6 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
         } catch (Exception e) {
             throw new PersistException( e );
         }
-        return getCreatedObject();
-    }
-
-    private T getCreatedObject() throws PersistException {
-        T persistInstance;
-        String sql = getSelectQuery() + " WHERE " + idStatement() + " = last_insert_id();";  //TODO ошибка
-        try (PreparedStatement statement = jdbcTemplate.getDataSource().getConnection().prepareStatement( sql )) {
-            ResultSet rs = statement.executeQuery();
-            List<T> list = parseResultSet( rs );
-            if ((list == null) || (list.size() != 1)) {
-                throw new PersistException( "Exception on findByPK new create dao." );
-            }
-            persistInstance = list.iterator().next();
-        } catch (Exception e) {
-            throw new PersistException( e );
-        }
-        return persistInstance;
     }
 
     @Override

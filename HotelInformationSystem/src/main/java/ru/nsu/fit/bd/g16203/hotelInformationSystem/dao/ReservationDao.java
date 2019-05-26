@@ -27,7 +27,7 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE reservation SET client_id = ? arrival_date = ?  departure_date = ? room_num = ? building_id = ? floor_num = ?" +
+        return "UPDATE reservation SET client_id = ?, arrival_date = ?,  departure_date = ?, room_num = ?, building_id = ?, floor_num = ?" +
                 "WHERE reservation_id = ?;";
     }
 
@@ -39,11 +39,6 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     @Override
     protected String getIdComparisionStatementPart() {
         return "WHERE reservation_id = ?;";
-    }
-
-    @Override
-    protected  String idStatement(){
-        return "reservation_id";
     }
 
     @Override

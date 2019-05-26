@@ -30,10 +30,9 @@ public class ClientController {
         clientService.update( client );
     }
 
-    @PostMapping("/{clientId}")
-    public Client createClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException {
-        client.setPK( clientId );
-        client = clientService.create( client );
+    @PostMapping
+    public Client createClient(@RequestBody Client client) throws PersistException {
+        clientService.create( client );
         return client;
     }
 

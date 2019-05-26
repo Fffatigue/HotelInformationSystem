@@ -31,7 +31,7 @@ public class ServiceController {
     @PostMapping
     public Service createRoom(@PathVariable int serviceId, @RequestBody Service service) throws PersistException {
         service.setPK(serviceId);
-        service = serviceService.create(service);
+        serviceService.create(service);
         return service;
     }
 }

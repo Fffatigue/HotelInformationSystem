@@ -28,8 +28,8 @@ public class ServiceService implements IServiceService {
     }
 
     @Override
-    public Service create(Service obj) throws PersistException {
-        return serviceDao.create(obj);
+    public void create(Service obj) throws PersistException {
+        serviceDao.create(obj);
     }
 
     @Override

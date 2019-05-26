@@ -30,10 +30,9 @@ public class OrganizationController {
         organizationService.update( organization );
     }
 
-    @PostMapping("/{organizationId}")
-    public Organization createOrganization(@PathVariable int organizationId, @RequestBody Organization organization) throws PersistException {
-        organization.setPK( organizationId );
-        organization = organizationService.create( organization );
+    @PostMapping
+    public Organization createOrganization(@RequestBody Organization organization) throws PersistException {
+        organizationService.create( organization );
         return organization;
     }
 

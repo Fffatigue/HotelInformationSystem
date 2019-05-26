@@ -29,8 +29,8 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public Reservation create(Reservation obj) throws PersistException {
-        return reservationDao.create(obj);
+    public void create(Reservation obj) throws PersistException {
+        reservationDao.create(obj);
     }
 
     @Override

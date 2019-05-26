@@ -40,11 +40,6 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
     }
 
     @Override
-    protected  String idStatement(){
-        return "review_id";
-    }
-
-    @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
         statement.setInt(1, primaryKey);
     }

@@ -30,8 +30,8 @@ public class FloorService implements IFloorService {
     }
 
     @Override
-    public Floor create(Floor obj) throws PersistException {
-        return floorDao.create(obj);
+    public void create(Floor obj) throws PersistException {
+        floorDao.create(obj);
     }
 
     @Override

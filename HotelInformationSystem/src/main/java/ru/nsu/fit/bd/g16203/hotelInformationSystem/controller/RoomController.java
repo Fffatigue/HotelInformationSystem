@@ -50,7 +50,7 @@ public class RoomController {
 
     @PostMapping
     public Room createRoom(@RequestBody Room room) throws PersistException {
-        room = roomService.create( room );
+        roomService.create( room );
         return room;
     }
 }

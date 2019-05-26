@@ -28,7 +28,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE room SET price = ? capacity = ? WHERE room_num = ? and floor_num = ? and building_id = ?;";
+        return "UPDATE room SET price = ?, capacity = ? WHERE room_num = ? and floor_num = ? and building_id = ?;";
     }
 
     @Override
@@ -39,11 +39,6 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
     protected String getIdComparisionStatementPart() {
         return "WHERE room_num = ? AND building_id = ? AND floor_num = ?;";
-    }
-
-    @Override
-    protected  String idStatement(){
-        return "id";
     }
 
     @Override

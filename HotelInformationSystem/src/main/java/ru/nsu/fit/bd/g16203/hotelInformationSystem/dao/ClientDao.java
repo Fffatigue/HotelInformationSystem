@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,10 +20,8 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     public String getCreateQuery() {
-        return  "INSERT INTO client (client_id) \n" +
-                "VALUES (?);\n" +
-                "INSERT INTO individual (full_name, client_id) \n" +
-                "VALUES (?, ?);";
+        return  "WITH rowss AS (INSERT INTO client (client_id) VALUES (DEFAULT) returning client_id) \n" +
+                "INSERT INTO individual (full_name, client_id) values (?, (SELECT client_id FROM rowss));";
     }
 
     @Override
@@ -40,12 +37,7 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return "WHERE client_id = ?;";
-    }
-
-    @Override
-    protected String idStatement(){
-        return "client_id";
+        return " WHERE client_id = ?;";
     }
 
     @Override
@@ -61,9 +53,7 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Client obj) throws SQLException {
-        statement.setInt(1, obj.getPK());
-        statement.setString(2, obj.getName());
-        statement.setInt(3, obj.getPK());
+        statement.setString(1, obj.getName());
     }
 
     @Override

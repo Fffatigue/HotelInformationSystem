@@ -20,15 +20,13 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     public String getCreateQuery() {
-        return  "INSERT INTO client (client_id) \n" +
-                "VALUES (?);\n" +
-                "INSERT INTO entity (name, discount, client_id) \n" +
-                "VALUES (?, ?, ?);";
+        return  "WITH rowss AS (INSERT INTO client (client_id) VALUES (DEFAULT) returning client_id) \n" +
+                "INSERT INTO entity (name, discount, client_id) values (?, ?, (SELECT client_id FROM rowss));";
     }
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE entity SET name = ? discount = ? WHERE client_id = ?;";
+        return "UPDATE entity SET name = ?, discount = ? WHERE client_id = ?;";
     }
 
     @Override
@@ -40,11 +38,6 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
     @Override
     protected String getIdComparisionStatementPart() {
         return " WHERE client_id = ?;";
-    }
-
-    @Override
-    protected String idStatement(){
-        return "client_id";
     }
 
     @Override
@@ -61,10 +54,8 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Organization obj) throws SQLException {
-        statement.setInt(1, obj.getPK());
-        statement.setString(2, obj.getName());
-        statement.setInt(3, obj.getDiscount());
-        statement.setInt(4, obj.getPK());
+        statement.setString(1, obj.getName());
+        statement.setInt(2, obj.getDiscount());
     }
 
     @Override

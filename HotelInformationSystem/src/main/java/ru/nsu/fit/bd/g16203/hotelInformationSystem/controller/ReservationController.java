@@ -33,7 +33,7 @@ public class ReservationController {
     @PostMapping("/{reservationId}")
     public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
         reservation.setPK( reservationId );
-        reservation = reservationService.create( reservation );
+        reservationService.create( reservation );
         return reservation;
     }
 

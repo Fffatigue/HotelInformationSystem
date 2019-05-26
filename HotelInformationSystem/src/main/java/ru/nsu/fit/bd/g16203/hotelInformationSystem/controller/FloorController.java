@@ -34,7 +34,7 @@ public class FloorController {
     public Floor createFloor(@PathVariable int buildingId, @PathVariable int floorNum, @RequestBody Floor floor) throws PersistException {
         FloorId floorId = new FloorId(buildingId, floorNum);
         floor.setPK(floorId);
-        floor = floorService.create(floor);
+        floorService.create(floor);
         return floor;
     }
 }
