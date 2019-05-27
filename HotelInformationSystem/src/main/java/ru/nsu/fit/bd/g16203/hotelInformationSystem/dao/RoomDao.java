@@ -6,6 +6,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import java.util.List;
 public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
     public String getSelectQuery() {
-        return "SELECT * FROM room ";
+        return "SELECT * FROM room r join building b on b.building_id = r.building_id";
     }
 
     @Override
@@ -38,7 +39,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return " WHERE room_num = ? AND building_id = ? AND floor_num = ?;";
+        return " WHERE r.room_num = ? AND r.building_id = ? AND r.floor_num = ?;";
     }
 
     @Override
@@ -85,11 +86,24 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
             room.setPK( roomId );
             rooms.add( room );
             floorId.setBuildingId( rs.getInt( "building_id" ) );
+            floorId.setBuildingName( rs.getString("name") );
             floorId.setFloorNum( rs.getInt( "floor_num" ) );
             roomId.setRoomNum( rs.getInt( "room_num" ) );
             room.setPrice( rs.getInt( "price" ) );
             room.setCapacity( rs.getInt( "capacity" ) );
         }
         return rooms;
+    }
+
+    @Override
+    public List<Room> getAllByFloor(int floorNum) throws SQLException {
+        String sql = getSelectQuery() + " WHERE floor_num = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, floorNum );
+                ResultSet rs = statement.executeQuery();
+                return parseResultSet( rs );
+            }
+        }
     }
 }

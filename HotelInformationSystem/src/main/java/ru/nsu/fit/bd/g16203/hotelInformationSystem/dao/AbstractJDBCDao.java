@@ -81,12 +81,13 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     @Override
     public int getPageNum() throws SQLException {
-        String sql = "SELECT COUNT(*) AS count FROM(" + getSelectQuery() + ")r";
+        String sql = "SELECT COUNT(*) AS count FROM(" + getSelectQuery() + ")p";
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 ResultSet rs = statement.executeQuery();
                 rs.next();
-                return (rs.getInt( "count" ) + ROWS_PER_PAGE - 1)/ROWS_PER_PAGE;
+                int count = (rs.getInt( "count" ) + ROWS_PER_PAGE - 1)/ROWS_PER_PAGE;
+                return count == 0? 1 : count;
             }
         }
     }
@@ -111,6 +112,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     @Override
     public void delete(PK primaryKey) throws PersistException {
         String sql = getDeleteQuery();
+        System.out.println( sql );
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 prepareStatementForDelete( statement, primaryKey );
@@ -120,6 +122,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
                 }
             }
         } catch (Exception e) {
+            System.out.println( "msg" );
             throw new PersistException( e );
         }
     }

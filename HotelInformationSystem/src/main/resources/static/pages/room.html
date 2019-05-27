@@ -1,6 +1,6 @@
-<!-- home.html -->
-<div class="jumbotron text-center">
+<div id = room class="jumbotron text-center">
     <dl>
+        <!-- ko -->
         <p style="font-size: 30px"><b>Building : </b><span data-bind="text: buildingName"></span></p>
 
         <p style="font-size: 30px"><b>Floor : </b><span data-bind="text: floorNum"></span></p>
@@ -10,23 +10,42 @@
         <p style="font-size: 30px"><b>Capacity : </b><span data-bind="text: capacity"></span></p>
 
         <p style="font-size: 30px"><b>Price : </b><span data-bind="text: price"></span></p>
+        <!-- /ko -->
     </dl>
 </div>
 
 <script>
 
-    function getData() {
-        return $.ajax({
-            url: "http://localhost:8080/rooms/building/" + localStorage.getItem("buildingName") + "/floor/"
-                + localStorage.getItem("floorNum") + "/room/" + localStorage.getItem("roomNum"),
-            type: 'GET'
-        });
+    function RoomViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.buildingName = ko.observable();
+        self.floorNum = ko.observable();
+        self.roomNum = ko.observable();
+        self.capacity = ko.observable();
+        self.price = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+        self.ajax(self.URI + 'rooms/building/' + localStorage.getItem("buildingId") + '/floor/' +
+            localStorage.getItem("floorNum") + '/room/' + localStorage.getItem("roomNum"), 'GET').done(function (data) {
+            self.buildingName(data.pk.floorId.buildingName);
+            self.floorNum(data.pk.floorId.floorNum);
+            self.roomNum(data.pk.roomNum);
+            self.capacity(data.capacity);
+            self.price(data.price);
+            })
     }
 
-    function handleData(data) {
-        ko.status = ko.observable(data.rows);
-        ko.applyBindings(data)
-    }
-
-    getData().done(handleData);
+    var roomViewModel = new RoomViewModel();
+    ko.applyBindings(roomViewModel, $('#room')[0]);
 </script>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class FloorId implements Serializable {
     private int buildingId;
+    private String buildingName;
     private int floorNum;
 
     public FloorId() {
@@ -12,6 +13,14 @@ public class FloorId implements Serializable {
     public FloorId(int buildingId, int floorNum) {
         this.buildingId = buildingId;
         this.floorNum = floorNum;
+    }
+
+    public String getBuildingName() {
+        return buildingName;
+    }
+
+    public void setBuildingName(String buildingName) {
+        this.buildingName = buildingName;
     }
 
     public int getBuildingId() {

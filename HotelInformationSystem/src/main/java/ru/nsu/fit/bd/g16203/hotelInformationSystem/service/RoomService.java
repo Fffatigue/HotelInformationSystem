@@ -44,4 +44,9 @@ public class RoomService implements IRoomService {
     public List<Room> getAll(int page) throws PersistException {
         return roomDao.getAll( page );
     }
+
+    @Override
+    public List<Room> getAllByFloor(int floorNum) throws SQLException {
+        return roomDao.getAllByFloor( floorNum );
+    }
 }

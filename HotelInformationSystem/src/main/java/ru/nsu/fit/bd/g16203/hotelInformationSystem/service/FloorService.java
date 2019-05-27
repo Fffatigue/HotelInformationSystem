@@ -44,4 +44,9 @@ public class FloorService implements IFloorService {
     public List<Floor> getAll(int page) throws PersistException {
         return floorDao.getAll(page);
     }
+
+    @Override
+    public List<Floor> getAllByBuilding(int buildingId) throws SQLException {
+        return floorDao.getAllByBuilding(buildingId);
+    }
 }

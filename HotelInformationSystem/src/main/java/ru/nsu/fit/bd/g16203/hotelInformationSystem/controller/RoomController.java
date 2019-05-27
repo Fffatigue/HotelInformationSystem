@@ -25,8 +25,9 @@ public class RoomController {
     }
 
     @DeleteMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
-    public void deleteRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum) throws PersistException {
+    public int deleteRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum) throws PersistException, SQLException {
         roomService.delete( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
+        return roomService.getPageNum();
     }
 
     @PutMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")

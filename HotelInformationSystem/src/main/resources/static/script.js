@@ -10,15 +10,19 @@ app.config(function ($routeProvider) {
 
     // route for the home page
         .when('/', {
-            templateUrl: 'pages/home.html',
-            controller: 'mainController'
+            templateUrl: 'pages/home.html'
         })
 
         // route for the about page
-        .when('/rooms', {
-            templateUrl: 'pages/rooms.html'
+        .when('/rooms/:pageNum', {
+            templateUrl: 'pages/rooms.html',
+            controller: 'roomsController'
         })
-        .when('/building/:buildingName/floor/:floorNum/room/:roomNum', {
+        .when('/floors/:pageNum', {
+            templateUrl: 'pages/floors.html',
+            controller: 'floorsController'
+        })
+        .when('/building/:buildingId/floor/:floorNum/room/:roomNum', {
             templateUrl: 'pages/room.html',
             controller: 'roomController'
         })
@@ -30,17 +34,19 @@ app.config(function ($routeProvider) {
         });
 });
 
-// create the controller and inject Angular's $scope
-app.controller('mainController', function ($scope) {
-    // create a message to display in our view
-    $scope.message = 'Everyone come and see how good I look!';
+app.controller('roomsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
+app.controller('floorsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
 });
 
 
 app.controller('roomController', function ($scope, $routeParams) {
-    $scope.buildingName = $routeParams.buildingName;
-    $scope.floorNum = $routeParams.floorNum;
-    $scope.roomNum = $routeParams.roomNum;
+    $scope.buildingId = $routeParams.buildingId;
+    localStorage.setItem("buildingId", $routeParams.buildingId);
+    localStorage.setItem("floorNum", $routeParams.floorNum);
+    localStorage.setItem("roomNum", $routeParams.roomNum);
 });
 
 
