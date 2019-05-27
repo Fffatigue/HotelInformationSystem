@@ -10,6 +10,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IRoomService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,11 @@ public class RoomController {
         room.setPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
         roomService.create(room );
         return room;
+    }
+
+    @RequestMapping("/page")
+    public int getPageNum() throws SQLException {
+        return roomService.getPageNum();
     }
 
     @RequestMapping("/page/{page}")

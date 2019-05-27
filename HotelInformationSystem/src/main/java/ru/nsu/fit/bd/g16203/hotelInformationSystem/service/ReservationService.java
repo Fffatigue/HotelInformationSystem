@@ -6,6 +6,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReservationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Reservation;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -16,6 +17,11 @@ public class ReservationService implements IReservationService {
     @Override
     public Reservation getByPK(Integer primaryKey) throws PersistException {
         return reservationDao.getByPK(primaryKey);
+    }
+
+    @Override
+    public int getPageNum() throws SQLException {
+        return reservationDao.getPageNum();
     }
 
     @Override

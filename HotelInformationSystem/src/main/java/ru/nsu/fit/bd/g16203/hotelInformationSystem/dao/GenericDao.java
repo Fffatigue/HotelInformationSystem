@@ -2,6 +2,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.dao;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Entity;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface GenericDao<T extends Entity, PK> {
@@ -12,6 +13,8 @@ public interface GenericDao<T extends Entity, PK> {
     public void delete(PK primaryKey) throws PersistException;
 
     public List<T> getAll(int page) throws PersistException;
+
+    public int getPageNum() throws SQLException;
 
     public void create(T obj) throws PersistException;
 

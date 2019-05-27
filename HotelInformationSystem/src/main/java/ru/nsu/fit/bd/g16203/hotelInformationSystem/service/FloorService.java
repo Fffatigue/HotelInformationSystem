@@ -7,6 +7,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Floor;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -17,6 +18,11 @@ public class FloorService implements IFloorService {
     @Override
     public Floor getByPK(FloorId primaryKey) throws PersistException {
         return floorDao.getByPK(primaryKey);
+    }
+
+    @Override
+    public int getPageNum() throws SQLException {
+        return floorDao.getPageNum();
     }
 
     @Override

@@ -22,6 +22,11 @@ public class OrganizationService implements IOrganizationService{
     }
 
     @Override
+    public int getPageNum() throws SQLException {
+        return organizationDao.getPageNum();
+    }
+
+    @Override
     public void update(Organization obj) throws PersistException {
         organizationDao.update(obj);
     }

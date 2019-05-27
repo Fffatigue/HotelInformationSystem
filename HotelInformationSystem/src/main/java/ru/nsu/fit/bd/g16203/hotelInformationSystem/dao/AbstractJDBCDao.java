@@ -39,6 +39,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     protected abstract List<T> parseResultSet(ResultSet rs) throws SQLException;
 
+    private static final int ROWS_PER_PAGE = 10;
+
     @Override
     public T getByPK(PK primaryKey) throws PersistException {
         List<T> list;
@@ -65,7 +67,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     @Override
     public List<T> getAll(int page) throws PersistException {
         List<T> list;
-        String sql = getSelectQuery() + " LIMIT 5 OFFSET " + String.valueOf( (page - 1) * 5 );
+        String sql = getSelectQuery() + " LIMIT " + ROWS_PER_PAGE + " OFFSET " + String.valueOf( (page - 1) * ROWS_PER_PAGE );
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 ResultSet rs = statement.executeQuery();
@@ -75,6 +77,18 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
             throw new PersistException( e );
         }
         return list;
+    }
+
+    @Override
+    public int getPageNum() throws SQLException {
+        String sql = "SELECT COUNT(*) AS count FROM(" + getSelectQuery() + ")r";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                ResultSet rs = statement.executeQuery();
+                rs.next();
+                return (rs.getInt( "count" ) + ROWS_PER_PAGE - 1)/ROWS_PER_PAGE;
+            }
+        }
     }
 
     @Override

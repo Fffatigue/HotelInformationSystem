@@ -20,6 +20,12 @@
         <!-- /ko -->
     </table>
     <button data-bind="click: beginAdd" class="btn">Add Room</button>
+
+    <div id="pagination" class="w3-bar">
+        <!-- ko foreach: pagination -->
+        <button data-bind="click: $parent.showPage" class="w3-button"><span data-bind="text: pageNum"></span></button>
+        <!-- /ko -->
+    </div>
 </div>
 
 <div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
@@ -81,8 +87,9 @@
 <script>
     function RoomsViewModel() {
         var self = this;
-        self.roomsURI = 'http://localhost:8080/rooms';
+        self.roomsURI = 'http://localhost:8080/rooms/page/';
         self.rooms = ko.observableArray();
+        self.pagination = ko.observableArray();
 
         self.ajax = function (uri, method, data) {
             var request = {
@@ -101,11 +108,11 @@
             $('#add').modal('show');
         }
 
-        self.beginDetails = function(room){
+        self.beginDetails = function (room) {
             localStorage.setItem("buildingName", room.buildingName());
             localStorage.setItem("floorNum", room.floorNum());
             localStorage.setItem("roomNum", room.roomNum());
-            var href = '#building/'+room.buildingName()+'/floor/' + room.floorNum() + '/room/' + room.roomNum();
+            var href = '#building/' + room.buildingName() + '/floor/' + room.floorNum() + '/room/' + room.roomNum();
             window.location = href
         }
 
@@ -128,6 +135,15 @@
         }
 
         self.ajax(self.roomsURI, 'GET').done(function (data) {
+            for (var i = 1; i <= data; i++) {
+                self.pagination.push({
+                    pageNum: ko.observable(i)
+                })
+            }
+        })
+
+        self.ajax(self.roomsURI, 'GET').done(function (data) {
+            console.log(data);
             for (var i = 0; i < data.length; i++) {
                 self.rooms.push({
                     roomNum: ko.observable(data[i].roomNum),

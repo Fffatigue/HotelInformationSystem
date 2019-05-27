@@ -6,6 +6,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReviewDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Review;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -16,6 +17,11 @@ public class ReviewService implements IReviewService {
     @Override
     public Review getByPK(Integer primaryKey) throws PersistException {
         return reviewDao.getByPK(primaryKey);
+    }
+
+    @Override
+    public int getPageNum() throws SQLException {
+        return reviewDao.getPageNum();
     }
 
     @Override

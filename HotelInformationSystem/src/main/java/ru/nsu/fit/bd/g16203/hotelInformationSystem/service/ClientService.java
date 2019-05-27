@@ -21,6 +21,11 @@ public class ClientService implements IClientService {
     }
 
     @Override
+    public int getPageNum() throws SQLException {
+        return clientDao.getPageNum();
+    }
+
+    @Override
     public void update(Client obj) throws PersistException {
         clientDao.update( obj );
     }

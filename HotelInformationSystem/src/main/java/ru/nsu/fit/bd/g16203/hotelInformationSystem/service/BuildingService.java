@@ -7,6 +7,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IRoomDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -17,6 +18,11 @@ public class BuildingService implements IBuildingService{
     @Override
     public Building getByPK(Integer primaryKey) throws PersistException {
         return buildingDao.getByPK(primaryKey);
+    }
+
+    @Override
+    public int getPageNum() throws SQLException {
+        return buildingDao.getPageNum();
     }
 
     @Override
