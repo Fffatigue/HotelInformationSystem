@@ -15,7 +15,7 @@ public class ServiceService implements IServiceService {
 
     @Override
     public Service getByPK(Integer primaryKey) throws PersistException {
-        return serviceDao.getByPK( primaryKey );
+        return serviceDao.getByPK(primaryKey);
     }
 
     @Override
@@ -25,21 +25,21 @@ public class ServiceService implements IServiceService {
 
     @Override
     public void update(Service obj) throws PersistException {
-        serviceDao.update( obj );
+        serviceDao.update(obj);
     }
 
     @Override
     public void delete(Integer primaryKey) throws PersistException {
-        serviceDao.delete( primaryKey );
+        serviceDao.delete(primaryKey);
     }
 
     @Override
     public void create(Service obj) throws PersistException {
-        serviceDao.create( obj );
+        serviceDao.create(obj);
     }
 
     @Override
     public List<Service> getAll(int page) throws PersistException {
-        return serviceDao.getAll( page );
+        return serviceDao.getAll(page);
     }
 }

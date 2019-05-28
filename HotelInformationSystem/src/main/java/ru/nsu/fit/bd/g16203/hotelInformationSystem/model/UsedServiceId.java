@@ -1,6 +1,8 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.model;
 
-public class UsedServiceId {
+import java.io.Serializable;
+
+public class UsedServiceId implements Serializable {
     private int serviceId;
     private int reservationId;
 
