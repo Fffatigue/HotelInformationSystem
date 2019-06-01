@@ -1,4 +1,4 @@
-<div id = room class="jumbotron text-center">
+<div id=room class="jumbotron text-center">
     <dl>
         <p style="font-size: 30px"><b>Building : </b><span data-bind="text: buildingName"></span></p>
 
@@ -6,9 +6,18 @@
 
         <p style="font-size: 30px"><b>Room : </b><span data-bind="text: roomNum"></span></p>
 
-        <p style="font-size: 30px"><b>Capacity : </b><span data-bind="text: capacity"></span></p>
-
-        <p style="font-size: 30px"><b>Price : </b><span data-bind="text: price"></span></p>
+        <label class="control-label" for="inputPrice"><p style="font-size: 30px"><b>Price : </b>
+            <input data-bind="value: price" type="text" id="inputPrice" placeholder="Price"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputCapacity"><p style="font-size: 30px"><b>Capacity : </b>
+            <input data-bind="value: capacity" type="text" id="inputCapacity" placeholder="Capacity"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px">
+        <p style="font-size: 30px">
+            <button data-bind="click: accept" class="btn btn-primary">Accept</button>
+            <button data-bind="click: deleteRoom" class="btn">Delete</button>
+        <button data-bind="click: cancel" class="btn">Cancel</button>
+        </p>
     </dl>
 </div>
 
@@ -41,7 +50,32 @@
             self.roomNum(data.pk.roomNum);
             self.capacity(data.capacity);
             self.price(data.price);
-            })
+        })
+
+        self.accept = function () {
+            self.ajax(self.URI + 'rooms/building/' + self.buildingName() + '/floor/' + self.floorNum() + '/room/' + self.roomNum(), 'PUT', {
+                capacity: self.capacity(),
+                price: self.price()
+            }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        self.deleteRoom = function () {
+            self.ajax(self.URI + 'rooms/building/' + self.buildingName() + '/floor/' + self.floorNum() + '/room/' + self.roomNum(), 'DELETE')
+                .done(function () {
+                    var href = '#/rooms/' + 1;
+                    window.location = href;
+                })
+                .error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        self.cancel = function () {
+            var href = '#/rooms/' + 1;
+            window.location = href;
+        }
     }
 
     var roomViewModel = new RoomViewModel();
