@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IOrganizationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 
 import java.sql.SQLException;
@@ -27,17 +28,17 @@ public class OrganizationService implements IOrganizationService{
     }
 
     @Override
-    public void update(Organization obj) throws PersistException {
+    public void update(Organization obj) throws PersistException, SQLException, WrongDataException {
         organizationDao.update(obj);
     }
 
     @Override
-    public void delete(Integer primaryKey) throws PersistException {
+    public void delete(Integer primaryKey) throws PersistException, WrongDataException {
         organizationDao.delete(primaryKey);
     }
 
     @Override
-    public void create(Organization obj) throws PersistException {
+    public void create(Organization obj) throws PersistException, SQLException, WrongDataException {
         organizationDao.create(obj);
     }
 

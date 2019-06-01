@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReservationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Reservation;
 
 import java.sql.SQLException;
@@ -25,17 +26,17 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public void update(Reservation obj) throws PersistException {
+    public void update(Reservation obj) throws PersistException, SQLException, WrongDataException {
         reservationDao.update(obj);
     }
 
     @Override
-    public void delete(Integer primaryKey) throws PersistException {
+    public void delete(Integer primaryKey) throws PersistException, WrongDataException {
         reservationDao.delete(primaryKey);
     }
 
     @Override
-    public void create(Reservation obj) throws PersistException {
+    public void create(Reservation obj) throws PersistException, SQLException, WrongDataException {
         reservationDao.create(obj);
     }
 

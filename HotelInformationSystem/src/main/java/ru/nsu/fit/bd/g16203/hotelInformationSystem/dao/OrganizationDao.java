@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Transactional
 @Repository
 public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> implements IOrganizationDao {
     @Override
@@ -67,6 +66,42 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
     }
 
     @Override
+    protected void checkDataCreate(Organization obj) throws SQLException, WrongDataException {
+        if (obj.getDiscount() < 0 || obj.getDiscount() > 100) {
+            throw new WrongDataException( "discount must be in 0-100 range" );
+        }
+        String sql = "SELECT * FROM entity WHERE name = ?;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setString( 1, obj.getName() );
+                List<Organization> organizations = parseResultSet( statement.executeQuery() );
+                if (!organizations.isEmpty()) {
+                    throw new WrongDataException( "name is already used" );
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkDataUpdate(Organization obj) throws SQLException, WrongDataException {
+        if (obj.getDiscount() < 0 || obj.getDiscount() > 100) {
+            throw new WrongDataException( "discount must be in 0-100 range" );
+        }
+        String sql = "SELECT * FROM entity WHERE name = ?;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setString( 1, obj.getName() );
+                List<Organization> organizatons = parseResultSet( statement.executeQuery() );
+                for (Organization organizaton : organizatons) {
+                    if (organizaton.getName().equals( obj.getName() ) && !organizaton.getPK().equals( obj.getPK() )) {
+                        throw new WrongDataException( "name is already used" );
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     protected List<Organization> parseResultSet(ResultSet rs) throws SQLException {
         List<Organization> organizations = new ArrayList<>();
         while (rs.next()) {
@@ -81,6 +116,7 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
+        //TODO check data
         String sql = "select name, discount, client_id from(\n" +
                 "    select name, discount, r.client_id, count(*) from\n" +
                 "        reservation r\n" +
@@ -102,6 +138,7 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     public List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException {
+        //TODO check data
         String sql = "select name, discount, client_id from(\n" +
                 "    select name, discount, r.client_id, count(*) from\n" +
                 "        reservation r\n" +

@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
 @Repository
 public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
@@ -76,6 +75,16 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     }
 
     @Override
+    protected void checkDataCreate(Room obj) throws SQLException, WrongDataException {
+
+    }
+
+    @Override
+    protected void checkDataUpdate(Room obj) throws SQLException, WrongDataException {
+
+    }
+
+    @Override
     protected List<Room> parseResultSet(ResultSet rs) throws SQLException {
         List<Room> rooms = new ArrayList<>();
         while (rs.next()) {
@@ -86,7 +95,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
             room.setPK( roomId );
             rooms.add( room );
             floorId.setBuildingId( rs.getInt( "building_id" ) );
-            floorId.setBuildingName( rs.getString("name") );
+            floorId.setBuildingName( rs.getString( "name" ) );
             floorId.setFloorNum( rs.getInt( "floor_num" ) );
             roomId.setRoomNum( rs.getInt( "room_num" ) );
             room.setPrice( rs.getInt( "price" ) );

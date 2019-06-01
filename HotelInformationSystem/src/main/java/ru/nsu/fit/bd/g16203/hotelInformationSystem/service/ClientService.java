@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IClientDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 
 import java.sql.SQLException;
@@ -26,17 +27,17 @@ public class ClientService implements IClientService {
     }
 
     @Override
-    public void update(Client obj) throws PersistException {
+    public void update(Client obj) throws PersistException, SQLException, WrongDataException {
         clientDao.update( obj );
     }
 
     @Override
-    public void delete(Integer primaryKey) throws PersistException {
+    public void delete(Integer primaryKey) throws PersistException, WrongDataException {
         clientDao.deleteTransaction( primaryKey );
     }
 
     @Override
-    public void create(Client obj) throws PersistException {
+    public void create(Client obj) throws PersistException, SQLException, WrongDataException {
         clientDao.createTransaction( obj );
     }
 

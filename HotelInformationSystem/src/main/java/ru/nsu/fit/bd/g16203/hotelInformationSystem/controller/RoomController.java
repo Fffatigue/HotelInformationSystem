@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
@@ -25,19 +26,19 @@ public class RoomController {
     }
 
     @DeleteMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
-    public int deleteRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum) throws PersistException, SQLException {
+    public int deleteRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum) throws PersistException, SQLException, WrongDataException {
         roomService.delete( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
         return roomService.getPageNum();
     }
 
     @PutMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
-    public void updateRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException {
+    public void updateRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException, SQLException, WrongDataException {
         room.setPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
         roomService.update( room );
     }
 
     @PostMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
-    public Room createRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException {
+    public Room createRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException, SQLException, WrongDataException {
         room.setPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
         roomService.create(room );
         return room;

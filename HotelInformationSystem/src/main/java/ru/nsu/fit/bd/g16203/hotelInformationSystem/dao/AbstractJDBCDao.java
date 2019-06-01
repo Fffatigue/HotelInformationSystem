@@ -3,7 +3,6 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Entity;
 
 import java.io.Serializable;
@@ -13,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Transactional
 @Repository
 public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable> implements GenericDao<T, PK> {
     @Autowired
@@ -37,6 +35,35 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     protected abstract void prepareStatementForDelete(PreparedStatement statement, PK primaryKey) throws SQLException;
 
+    protected abstract void checkDataCreate(T obj) throws SQLException, WrongDataException;
+
+    protected abstract void checkDataUpdate(T obj) throws SQLException, WrongDataException;
+
+    protected void checkForUpdate(T obj) throws WrongDataException, PersistException, SQLException {
+        if (obj.getPK() == null) {
+            throw new WrongDataException( "Can't find id to update" );
+        }
+        if (getByPK( (PK) obj.getPK() ) == null) {
+            throw new WrongDataException( "Can't find item to update" );
+        }
+        checkDataUpdate( obj );
+    }
+
+    protected void checkForDelete(PK primaryKey) throws PersistException, WrongDataException {
+        if (getByPK( primaryKey ) == null) {
+            throw new WrongDataException( "Can't find item to delete" );
+        }
+    }
+
+    protected void checkForCreate(T obj) throws PersistException, WrongDataException, SQLException {
+        if (obj.getPK() != null) {
+            if (getByPK( (PK) obj.getPK() ) != null) {
+                throw new WrongDataException( "Item is already created" );
+            }
+            checkDataCreate( obj );
+        }
+    }
+
     protected abstract List<T> parseResultSet(ResultSet rs) throws SQLException;
 
     private static final int ROWS_PER_PAGE = 10;
@@ -55,7 +82,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
         } catch (Exception e) {
             throw new PersistException( e );
         }
-        if (list == null || list.size() == 0) {
+        if (list == null || list.isEmpty()) {
             return null;
         }
         if (list.size() > 1) {
@@ -86,14 +113,15 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 ResultSet rs = statement.executeQuery();
                 rs.next();
-                int count = (rs.getInt( "count" ) + ROWS_PER_PAGE - 1)/ROWS_PER_PAGE;
-                return count == 0? 1 : count;
+                int count = (rs.getInt( "count" ) + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE;
+                return count == 0 ? 1 : count;
             }
         }
     }
 
     @Override
-    public void update(T obj) throws PersistException {
+    public void update(T obj) throws PersistException, WrongDataException, SQLException {
+        checkForUpdate( obj );
         String sql = getUpdateQuery();
 
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
@@ -110,9 +138,9 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public void delete(PK primaryKey) throws PersistException {
+    public void delete(PK primaryKey) throws PersistException, WrongDataException {
+        checkForDelete( primaryKey );
         String sql = getDeleteQuery();
-        System.out.println( sql );
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 prepareStatementForDelete( statement, primaryKey );
@@ -128,7 +156,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public void create(T object) throws PersistException {
+    public void create(T object) throws PersistException, WrongDataException, SQLException {
+        checkForCreate( object );
         String sql = getCreateQuery();
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
@@ -144,7 +173,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public void createTransaction(T object) throws PersistException {
+    public void createTransaction(T object) throws PersistException, WrongDataException, SQLException {
+        checkForCreate( object );
         String sql = getCreateQuery();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             connection.setAutoCommit( false );
@@ -165,7 +195,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
     }
 
     @Override
-    public void deleteTransaction(PK primaryKey) throws PersistException {
+    public void deleteTransaction(PK primaryKey) throws PersistException, WrongDataException {
+        checkForDelete( primaryKey );
         String sql = getDeleteQuery();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             connection.setAutoCommit( false );

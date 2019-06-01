@@ -3,6 +3,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IOrganizationService;
 
@@ -22,18 +23,18 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/id/{organizationId}")
-    public void deleteOrganization(@PathVariable int organizationId) throws PersistException {
+    public void deleteOrganization(@PathVariable int organizationId) throws PersistException, WrongDataException {
         organizationService.delete( organizationId );
     }
 
     @PutMapping("/id/{organizationId}")
-    public void updateOrganization(@PathVariable int organizationId, @RequestBody Organization organization) throws PersistException {
+    public void updateOrganization(@PathVariable int organizationId, @RequestBody Organization organization) throws PersistException, SQLException, WrongDataException {
         organization.setPK( organizationId );
         organizationService.update( organization );
     }
 
     @PostMapping
-    public Organization createOrganization(@RequestBody Organization organization) throws PersistException {
+    public Organization createOrganization(@RequestBody Organization organization) throws PersistException, SQLException, WrongDataException {
         organizationService.create( organization );
         return organization;
     }

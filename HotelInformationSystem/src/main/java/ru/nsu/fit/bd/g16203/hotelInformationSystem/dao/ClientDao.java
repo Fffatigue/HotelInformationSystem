@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Transactional
 @Repository
 public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClientDao {
     @Override
@@ -65,6 +64,16 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
     }
 
     @Override
+    protected void checkDataCreate(Client obj) throws SQLException, WrongDataException {
+        //not used
+    }
+
+    @Override
+    protected void checkDataUpdate(Client obj) throws SQLException, WrongDataException {
+        //not used
+    }
+
+    @Override
     protected List<Client> parseResultSet(ResultSet rs) throws SQLException {
         List<Client> clients = new ArrayList<>();
         while (rs.next()) {
@@ -78,6 +87,7 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
 
     @Override
     public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, Date beginDate, Date endDate) throws PersistException, SQLException {
+       //TODO add data check
         String sql = "select full_name, re.client_id from\n" +
                 "    reservation re\n" +
                 "    join room r\n" +

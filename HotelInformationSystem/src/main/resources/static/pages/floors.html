@@ -32,7 +32,8 @@
     </div>
 </div>
 
-<div id="addFloor" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+<div id="addFloor" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="addDialogLabel">Add Floor</h3>
@@ -97,8 +98,7 @@
         self.add = function (floor) {
             self.ajax(self.URI + 'floors/building/' + floor.buildingId() + '/floor/' +
                 floor.floorNum(), 'POST', floor).done(function (data) {
-                var href = '#/floors/' + Number(localStorage.getItem("page"));
-                window.location = href;
+                window.location.reload();
             });
         }
 
@@ -110,8 +110,7 @@
                     var href = '#/floors/' + Number(data);
                     window.location = href;
                 } else {
-                    var href = '#/floors/' + Number(localStorage.getItem("page"));
-                    window.location = href;
+                    window.location.reload();
                 }
 
             });
@@ -180,9 +179,9 @@
                 buildingId: self.selectedBuilding().buildingId,
 
             });
-            self.floorNum(null);
-            self.buildings(null);
-            self.selectedBuilding(null);
+            self.floorNum();
+            self.buildings();
+            self.selectedBuilding();
         }
     }
 

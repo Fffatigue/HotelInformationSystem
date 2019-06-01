@@ -5,6 +5,9 @@
 var app = angular.module('hotelInformationSystemApp', ['ngRoute']);
 
 // configure our routes
+/*здесь идет роутинг страниц, страницы всегда начинаются с #, типа если перейдем например на #/test/ то роутинг должен
+* быть .when('test'), в роутинге задается какая страница должна открываться и инициализация контроллера, но контроллерами
+* я не пользовался, потому что чото сложно, я просто в локал сторейдж добавлял нужные для перехода переменные*/
 app.config(function ($routeProvider) {
     $routeProvider
 
@@ -22,6 +25,7 @@ app.config(function ($routeProvider) {
             templateUrl: 'pages/floors.html',
             controller: 'floorsController'
         })
+        //здесь роутинг с параметрами параметры обозначаются :param
         .when('/building/:buildingId/floor/:floorNum/room/:roomNum', {
             templateUrl: 'pages/room.html',
             controller: 'roomController'
@@ -34,6 +38,8 @@ app.config(function ($routeProvider) {
         });
 });
 
+//$routeParams - объект, полями которого являются переданные в строке параметры, я их просто добавлял в локал сторейдж,
+//а потом доставал на странице, там где они мне были нужны
 app.controller('roomsController', function ($scope, $routeParams) {
     localStorage.setItem("page", $routeParams.pageNum);
 });

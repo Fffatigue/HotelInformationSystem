@@ -3,6 +3,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IClientService;
 
@@ -22,18 +23,18 @@ public class ClientController {
     }
 
     @DeleteMapping("/id/{clientId}")
-    public void deleteClient(@PathVariable int clientId) throws PersistException {
+    public void deleteClient(@PathVariable int clientId) throws PersistException, WrongDataException {
         clientService.delete( clientId );
     }
 
     @PutMapping("/id/{clientId}")
-    public void updateClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException {
+    public void updateClient(@PathVariable int clientId, @RequestBody Client client) throws PersistException, SQLException, WrongDataException {
         client.setPK( clientId );
         clientService.update( client );
     }
 
     @PostMapping
-    public Client createClient(@RequestBody Client client) throws PersistException {
+    public Client createClient(@RequestBody Client client) throws PersistException, SQLException, WrongDataException {
         clientService.create( client );
         return client;
     }

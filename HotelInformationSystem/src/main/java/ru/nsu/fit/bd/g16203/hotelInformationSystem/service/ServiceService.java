@@ -3,6 +3,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IServiceDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 
 import java.sql.SQLException;
@@ -24,17 +25,17 @@ public class ServiceService implements IServiceService {
     }
 
     @Override
-    public void update(Service obj) throws PersistException {
+    public void update(Service obj) throws PersistException, SQLException, WrongDataException {
         serviceDao.update( obj );
     }
 
     @Override
-    public void delete(Integer primaryKey) throws PersistException {
+    public void delete(Integer primaryKey) throws PersistException, WrongDataException {
         serviceDao.delete( primaryKey );
     }
 
     @Override
-    public void create(Service obj) throws PersistException {
+    public void create(Service obj) throws PersistException, SQLException, WrongDataException {
         serviceDao.create( obj );
     }
 

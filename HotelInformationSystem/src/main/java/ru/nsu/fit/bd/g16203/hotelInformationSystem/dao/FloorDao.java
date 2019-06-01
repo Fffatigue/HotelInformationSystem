@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Transactional
 @Repository
 public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorDao {
     @Override
@@ -64,6 +63,16 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
     protected void prepareStatementForDelete(PreparedStatement statement, FloorId primaryKey) throws SQLException {
         statement.setInt( 1, primaryKey.getFloorNum() );
         statement.setInt( 2, primaryKey.getBuildingId() );
+    }
+
+    @Override
+    protected void checkDataCreate(Floor obj) throws SQLException, WrongDataException {
+        //not used
+    }
+
+    @Override
+    protected void checkDataUpdate(Floor obj) throws SQLException, WrongDataException {
+        //not used
     }
 
     @Override

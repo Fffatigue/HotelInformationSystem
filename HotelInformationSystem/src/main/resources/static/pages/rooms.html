@@ -1,10 +1,13 @@
+<!--тут мы задаем таблицу с комнатами-->
 <div id="rooms" class="container">
     <table class="table table-striped">
+        <!--первый столбик - название полей-->
         <tr>
             <td><b>Hotel name</b></td>
             <td><b>Room</b></td>
             <td><b>Options</b></td>
         </tr>
+        <!--остальные столбики foreach проходит по массиву rooms, и мы перечисляем названия полей, которые нужно вывести или методы, которые нужно использовать-->
         <!-- ko foreach: rooms -->
         <tr>
             <td><b data-bind="text: buildingName"></b></td>
@@ -17,8 +20,11 @@
         </tr>
         <!-- /ko -->
     </table>
+
+    <!--кнопка добавления комнаты-->
     <button data-bind="click: beginAdd" class="btn">Add Room</button>
 
+    <!--ну это кнопочки со страницами тоже foreach по массиву с номерами страниц-->
     <div class="w3-center">
         <div id="pagination" class="w3-bar">
             <!-- ko foreach: pagination -->
@@ -33,7 +39,9 @@
     </div>
 </div>
 
-<div id="addRoom" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+<!--это окно которое по умолчанию невидимое с добавлением комнаты-->
+<div id="addRoom" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="addDialogLabel">Add Room</h3>
@@ -41,6 +49,7 @@
     <div class="modal-body">
 
         <form class="form-horizontal">
+            <!--это вывести список зданий, опшионс - массив зданий, опшионстекс - поле объекта массива, которое должно показываться, вэлью - выбранный объект, опшионс капшион - то что показывается когда никто не выбран-->
             <div class="control-group">
                 <label class="control-label" for="inputBuilding">Building</label>
                 <div class="controls">
@@ -51,6 +60,7 @@
                 </div>
             </div>
 
+            <!--это то же самое что и для зданий, только для этажей-->
             <div class="control-group">
                 <label class="control-label" for="inputFloor">Floor</label>
                 <div class="controls">
@@ -61,6 +71,7 @@
                 </div>
             </div>
 
+            <!--поле ввода для номера комнаты - плейсхолдер это то что показывается пока значение не введено, айди это чтобы лейбл рядом поставить, вэлью - переменная куда значение сохранится-->
             <div class="control-group">
                 <label class="control-label" for="inputRoom">Room</label>
                 <div class="controls">
@@ -69,6 +80,7 @@
                 </div>
             </div>
 
+            <!--то же самое что и для номера комнаты, только для цены-->
             <div class="control-group">
                 <label class="control-label" for="inputPrice">Price</label>
                 <div class="controls">
@@ -77,6 +89,7 @@
                 </div>
             </div>
 
+            <!--то же самое что и для номера комнаты только для вместительности-->
             <div class="control-group">
                 <label class="control-label" for="inputCapacity">Capacity</label>
                 <div class="controls">
@@ -87,6 +100,7 @@
 
         </form>
     </div>
+    <!--тут кнопки аддрум которая вызывает метод addRoom и кансел, которая скрывает окно просто, но введенные данные не удаляются, а остаются в этом окне-->
     <div class="modal-footer">
         <button data-bind="click: addRoom" class="btn btn-primary">Add Room</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
@@ -94,12 +108,15 @@
 </div>
 
 <script>
+    /*в скрипте 2 модели используются. Одна для таблицы, вторая для всплывающего окна*/
     function RoomsViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
+        /*инициализация массивов*/
         self.rooms = ko.observableArray();
         self.pagination = ko.observableArray();
 
+        /*задаем метод для работы с рест под названием ajax*/
         self.ajax = function (uri, method, data) {
             var request = {
                 url: uri,
@@ -113,23 +130,28 @@
             return $.ajax(request);
         }
 
+        /*задаем метод beginAdd для кнопки адд, который делает окно добавление комнаты видимым*/
         self.beginAdd = function () {
             $('#addRoom').modal('show');
         }
 
+        /*задаем метод beginDetails для кнопки детэйлс, которая связана с комнатой, которая делает редирект на страницу
+         выбранной комнаты*/
         self.beginDetails = function (room) {
             var href = '#/building/' + room.buildingId() + '/floor/' + room.floorNum() + '/room/' + room.roomNum();
             window.location = href
         }
 
+        /*задаем метод адд, который отправляет рест запрос на добавление, при удачном добавлении обновляем страницу*/
         self.add = function (room) {
             self.ajax(self.URI + 'rooms/building/' + room.buildingId() + '/floor/' +
                 room.floorNum() + '/room/' + room.roomNum(), 'POST', room).done(function (data) {
-                var href = '#/rooms/' + Number(localStorage.getItem("page"));
-                window.location = href;
+                window.location.reload();
             });
         }
 
+        /*задаем метод удаления комнаты, после удачного удаления смотрим новое количество страниц и то на какой мы странице,
+         если нужно переходим на другую страницу, иначе перезагружаем эту*/
         self.remove = function (room) {
             self.ajax(self.URI + 'rooms/building/' + Number(room.buildingId()) + '/floor/' +
                 room.floorNum() + '/room/' + room.roomNum(), 'DELETE'
@@ -138,19 +160,20 @@
                     var href = '#/rooms/' + Number(data);
                     window.location = href;
                 } else {
-                    var href = '#/rooms/' + Number(localStorage.getItem("page"));
-                    window.location = href;
+                    window.location.reload();
                 }
 
             });
         }
 
+        /*переход на другую страницу*/
         self.showPage = function (page) {
             var href = '#/rooms/' + page.pageNum();
             window.location = href;
         }
 
 
+        /*инициализация массива страниц*/
         self.ajax(self.URI + 'rooms/page', 'GET').done(function (data) {
             for (var i = 1; i <= data; i++) {
                 self.pagination.push({
@@ -160,6 +183,7 @@
             }
         })
 
+        /*инициализация массива комнат*/
         self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
             for (var i = 0; i < data.length; i++) {
                 self.rooms.push({
@@ -188,13 +212,16 @@
             return $.ajax(request);
         }
 
+        /*инициализация переменных в которые будут поступать входные данные*/
         self.roomNum = ko.observable();
         self.price = ko.observable();
         self.capacity = ko.observable();
 
+        /*инициализация массива зданий, который используются в выпадающих списках, а так же переменной для выбранного здания*/
         self.buildings = ko.observableArray();
         self.selectedBuilding = ko.observable();
 
+        /*заполнение массива зданий*/
         self.ajax(self.URI + 'buildings/page/1', 'GET').done(function (data) {
 
             for (var i = 0; i < data.length; i++) {
@@ -204,12 +231,13 @@
                 })
             }
         })
-
+        /*то же самое для этажей*/
         self.floors = ko.observableArray();
         self.selectedFloor = ko.observable();
 
-
-        self.selectedBuilding.subscribe(function(newBuilding){
+        /*здесь мы "подписываемся" на обновление переменной selectedBuilding, то есть при её изменении мы запрашиваем у
+        сервера номера этажей, которые есть у выбранного здания*/
+        self.selectedBuilding.subscribe(function (newBuilding) {
             self.floors.removeAll();
             self.ajax(self.URI + 'floors/building/' + newBuilding.buildingId(), 'GET').done(function (data) {
                 for (var i = 0; i < data.length; i++) {
@@ -220,6 +248,8 @@
             })
         })
 
+        /*метод аддрум вызывает метод адд у другой модели с целью отправки запроса на добавление комнат,
+         а потом чистит переменные, чтобы при следующем нажатии на кнопку адд не было старых значений*/
         self.addRoom = function () {
             $('#addRoom').modal('hide');
             roomsViewModel.add({
@@ -230,16 +260,17 @@
                 capacity: self.capacity
 
             });
-            self.roomNum(null);
-            self.capacity(null);
-            self.price(null);
-            self.floors(null);
-            self.buildings(null);
-            self.selectedBuilding(null);
-            self.selectedFloor(null);
+            self.roomNum();
+            self.capacity();
+            self.price();
+            self.floors();
+            self.buildings();
+            self.selectedBuilding();
+            self.selectedFloor();
         }
     }
 
+    /*здесь мы инициализируем используемые модели*/
     var roomsViewModel = new RoomsViewModel();
     var addRoomViewModel = new AddRoomViewModel();
     ko.applyBindings(roomsViewModel, $('#rooms')[0]);

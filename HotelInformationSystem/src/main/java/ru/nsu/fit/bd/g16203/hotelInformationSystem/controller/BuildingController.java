@@ -3,9 +3,11 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IBuildingService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -20,18 +22,18 @@ public class BuildingController {
     }
 
     @DeleteMapping("/id/{buildingId}")
-    public void deleteRoom(@PathVariable int buildingId) throws PersistException {
+    public void deleteRoom(@PathVariable int buildingId) throws PersistException, WrongDataException {
         buildingService.delete(buildingId);
     }
 
     @PutMapping("/id/{buildingId}")
-    public void updateBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException {
+    public void updateBuilding(@PathVariable int buildingId, @RequestBody Building building) throws PersistException, SQLException, WrongDataException {
         building.setPK(buildingId);
         buildingService.update(building);
     }
 
     @PostMapping
-    public Building createBuilding(@RequestBody Building building) throws PersistException {
+    public Building createBuilding(@RequestBody Building building) throws PersistException, SQLException, WrongDataException {
         buildingService.create(building);
         return building;
     }

@@ -3,9 +3,11 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Reservation;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IReservationService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -20,18 +22,18 @@ public class ReservationController {
     }
 
     @DeleteMapping("/id/{reservationId}")
-    public void deleteReservation(@PathVariable int reservationId) throws PersistException {
+    public void deleteReservation(@PathVariable int reservationId) throws PersistException, WrongDataException {
         reservationService.delete(reservationId);
     }
 
     @PutMapping("/id/{reservationId}")
-    public void updateReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
+    public void updateReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException, SQLException, WrongDataException {
         reservation.setPK( reservationId );
         reservationService.update( reservation );
     }
 
     @PostMapping("/id/{reservationId}")
-    public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
+    public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException, SQLException, WrongDataException {
         reservation.setPK( reservationId );
         reservationService.create( reservation );
         return reservation;

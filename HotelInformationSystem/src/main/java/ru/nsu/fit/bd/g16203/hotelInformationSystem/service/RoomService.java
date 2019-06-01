@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IRoomDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
@@ -26,17 +27,17 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public void update(Room obj) throws PersistException {
+    public void update(Room obj) throws PersistException, SQLException, WrongDataException {
         roomDao.update( obj );
     }
 
     @Override
-    public void delete(RoomId primaryKey) throws PersistException {
+    public void delete(RoomId primaryKey) throws PersistException, WrongDataException {
         roomDao.delete( primaryKey );
     }
 
     @Override
-    public void create(Room obj) throws PersistException {
+    public void create(Room obj) throws PersistException, SQLException, WrongDataException {
         roomDao.create( obj );
     }
 

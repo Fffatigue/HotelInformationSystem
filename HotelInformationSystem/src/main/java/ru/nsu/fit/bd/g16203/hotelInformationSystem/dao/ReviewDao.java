@@ -4,13 +4,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Review;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
 @Repository
 public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IReviewDao {
     @Override
@@ -63,6 +63,28 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
     @Override
     protected void prepareStatementForDelete(PreparedStatement statement, Integer primaryKey) throws SQLException {
         statement.setInt(1, primaryKey);
+    }
+
+    @Override
+    protected void checkDataCreate(Review obj) throws SQLException, WrongDataException {
+        checkDataUpdate( obj );
+    }
+
+    @Override
+    protected void checkDataUpdate(Review obj) throws SQLException, WrongDataException {
+        if(obj.getScore()< 0 || obj.getScore()>10){
+            throw new WrongDataException( "Score must be in 0-10 range" );
+        }
+        String sql = "SELECT * from reservation where reservation_id = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1,obj.getReservationId() );
+                ResultSet rs = statement.executeQuery();
+                if(!rs.next()){
+                    throw new WrongDataException( "Can't find reservation" );
+                }
+            }
+        }
     }
 
     @Override

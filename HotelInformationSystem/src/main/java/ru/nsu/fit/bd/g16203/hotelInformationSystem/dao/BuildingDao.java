@@ -4,13 +4,13 @@ import org.springframework.stereotype.Repository;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
 
 import javax.transaction.Transactional;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional
 @Repository
 public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements IBuildingDao {
     @Override
@@ -41,23 +41,53 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
 
     @Override
     protected void prepareStatementForGetByPK(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        statement.setInt(1, primaryKey);
+        statement.setInt( 1, primaryKey );
     }
 
     @Override
     protected void prepareStatementForUpdate(PreparedStatement statement, Building obj) throws SQLException {
-        statement.setString(1, obj.getName());
-        statement.setInt(2, obj.getPK());
+        statement.setString( 1, obj.getName() );
+        statement.setInt( 2, obj.getPK() );
     }
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Building obj) throws SQLException {
-        statement.setString(1, obj.getName());
+        statement.setString( 1, obj.getName() );
     }
 
     @Override
     protected void prepareStatementForDelete(PreparedStatement statement, Integer primaryKey) throws SQLException {
-        statement.setInt(1, primaryKey);
+        statement.setInt( 1, primaryKey );
+    }
+
+    @Override
+    protected void checkDataCreate(Building obj) throws SQLException, WrongDataException {
+        String sql = "SELECT * FROM building WHERE name = ?;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setString( 1, obj.getName() );
+                List<Building> buildings = parseResultSet( statement.executeQuery() );
+                if (!buildings.isEmpty()) {
+                    throw new WrongDataException( "name is already used" );
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkDataUpdate(Building obj) throws SQLException, WrongDataException {
+        String sql = "SELECT * FROM building WHERE name = ?;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setString( 1, obj.getName() );
+                List<Building> buildings = parseResultSet( statement.executeQuery() );
+                for(Building building : buildings){
+                    if(building.getName().equals( obj.getName() ) && !building.getPK().equals( obj.getPK() )){
+                        throw new WrongDataException( "name is already used" );
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -65,10 +95,10 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
         List<Building> buildings = new ArrayList<>();
         while (rs.next()) {
             Building building = new Building();
-            Integer buildingId = rs.getInt("building_id");
-            building.setPK(buildingId);
-            buildings.add(building);
-            building.setName(rs.getString("name"));
+            Integer buildingId = rs.getInt( "building_id" );
+            building.setPK( buildingId );
+            buildings.add( building );
+            building.setName( rs.getString( "name" ) );
         }
         return buildings;
     }

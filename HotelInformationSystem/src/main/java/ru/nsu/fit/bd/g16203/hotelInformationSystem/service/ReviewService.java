@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReviewDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Review;
 
 import java.sql.SQLException;
@@ -25,17 +26,17 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
-    public void update(Review obj) throws PersistException {
+    public void update(Review obj) throws PersistException, SQLException, WrongDataException {
         reviewDao.update(obj);
     }
 
     @Override
-    public void delete(Integer primaryKey) throws PersistException {
+    public void delete(Integer primaryKey) throws PersistException, WrongDataException {
         reviewDao.delete(primaryKey);
     }
 
     @Override
-    public void create(Review obj) throws PersistException {
+    public void create(Review obj) throws PersistException, SQLException, WrongDataException {
         reviewDao.create(obj);
     }
 
