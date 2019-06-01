@@ -9,4 +9,8 @@ import java.util.List;
 
 public interface IRoomDao extends GenericDao<Room, RoomId> {
     public List<Room> getAllByFloor(int floorNum) throws SQLException;
+
+    public int getFreeRoomsCount() throws SQLException;
+
+    public int getFreeRoomsWithParams(int capacity, int price) throws SQLException;
 }

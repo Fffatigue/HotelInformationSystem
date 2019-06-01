@@ -60,8 +60,8 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
             if (getByPK( (PK) obj.getPK() ) != null) {
                 throw new WrongDataException( "Item is already created" );
             }
-            checkDataCreate( obj );
         }
+        checkDataCreate( obj );
     }
 
     protected abstract List<T> parseResultSet(ResultSet rs) throws SQLException;

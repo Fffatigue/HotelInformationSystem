@@ -56,7 +56,8 @@
                     <select data-bind="options: buildings,
                                     optionsText: 'buildingName',
                                     value:selectedBuilding,
-                                    optionsCaption: 'Choose...'" id="inputBuilding" style="width: 300px;"></select>
+                                    optionsCaption: 'Choose...'" id="inputBuilding" style="width: 150px;"></select>
+                    <button data-bind="click: beginAddBuilding" class="btn">Add Building</button>
                 </div>
             </div>
 
@@ -68,6 +69,7 @@
                             optionsText: 'floorNum',
                     value:selectedFloor,
                     optionsCaption: 'Choose...'" id="inputFloor" style="width: 150px;"></select>
+                    <button data-bind="click: beginAddFloor" class="btn">Add Floor</button>
                 </div>
             </div>
 
@@ -103,6 +105,54 @@
     <!--тут кнопки аддрум которая вызывает метод addRoom и кансел, которая скрывает окно просто, но введенные данные не удаляются, а остаются в этом окне-->
     <div class="modal-footer">
         <button data-bind="click: addRoom" class="btn btn-primary">Add Room</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<div id="addFloor" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addFloorDialogLabel">Add Floor</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputFloorF">Floor</label>
+                <div class="controls">
+                    <input data-bind="value: floorNum" type="text" id="inputFloorF" placeholder="Floor number"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addFloor" class="btn btn-primary">Add Floor</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<div id="addBuilding" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addBuildingDialogLabel">Add Building</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputBuildingB">Floor</label>
+                <div class="controls">
+                    <input data-bind="value: buildingName" type="text" id="inputBuildingB" placeholder="Building name"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addBuilding" class="btn btn-primary">Add Building</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
@@ -146,7 +196,10 @@
         self.add = function (room) {
             self.ajax(self.URI + 'rooms/building/' + room.buildingId() + '/floor/' +
                 room.floorNum() + '/room/' + room.roomNum(), 'POST', room).done(function (data) {
+                $('#addRoom').modal('hide');
                 window.location.reload();
+            }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
             });
         }
 
@@ -251,14 +304,12 @@
         /*метод аддрум вызывает метод адд у другой модели с целью отправки запроса на добавление комнат,
          а потом чистит переменные, чтобы при следующем нажатии на кнопку адд не было старых значений*/
         self.addRoom = function () {
-            $('#addRoom').modal('hide');
             roomsViewModel.add({
                 roomNum: self.roomNum,
                 floorNum: self.selectedFloor().floorNum,
                 buildingId: self.selectedBuilding().buildingId,
-                price: self.price,
-                capacity: self.capacity
-
+                price: self.price(),
+                capacity: self.capacity()
             });
             self.roomNum();
             self.capacity();
@@ -268,11 +319,79 @@
             self.selectedBuilding();
             self.selectedFloor();
         }
+        /*метод для добавления этажей*/
+        self.addFloor = function (floor) {
+            self.ajax(self.URI + 'floors/building/' + self.selectedBuilding().buildingId() + '/floor/' + floor.floorNum(), 'POST', floor)
+                .done(function (data) {
+                    self.floors.push({
+                        floorNum: ko.observable(floor.floorNum())
+                    })
+                }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        self.addBuilding = function (building) {
+            self.ajax(self.URI + 'buildings', 'POST', building)
+                .done(function (data) {
+                    self.buildings.push({
+                        buildingName: ko.observable(data.name),
+                        buildingId: ko.observable(data.pk)
+                    })
+                }).error(function (xhr, thrownError) {
+                    console.log(building);
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        /*метод для того чтобы сделать окно добавления этажей видимым*/
+        self.beginAddFloor = function () {
+            if (!(self.selectedBuilding() === undefined)) {
+                $('#addFloor').modal('show');
+            } else {
+                alert('Select building')
+            }
+        }
+
+        self.beginAddBuilding = function () {
+            $('#addBuilding').modal('show');
+        }
+    }
+
+    /*модель добавления этажей*/
+    function AddFloorViewModel() {
+        var self = this;
+        self.floorNum = ko.observable();
+
+        self.addFloor = function () {
+            addRoomViewModel.addFloor({
+                floorNum: self.floorNum,
+            });
+            self.floorNum();
+            $('#addFloor').modal('hide');
+        }
+    }
+
+    function AddBuildingViewModel() {
+        var self = this;
+        self.buildingName = ko.observable();
+
+        self.addBuilding = function () {
+            addRoomViewModel.addBuilding({
+                name: self.buildingName(),
+            });
+            self.buildingName();
+            $('#addBuilding').modal('hide');
+        }
     }
 
     /*здесь мы инициализируем используемые модели*/
     var roomsViewModel = new RoomsViewModel();
     var addRoomViewModel = new AddRoomViewModel();
+    var addFloorViewModel = new AddFloorViewModel();
+    var addBuildingViewModel = new AddBuildingViewModel();
+    ko.applyBindings(addFloorViewModel, $('#addFloor')[0]);
+    ko.applyBindings(addBuildingViewModel, $('#addBuilding')[0]);
     ko.applyBindings(roomsViewModel, $('#rooms')[0]);
     ko.applyBindings(addRoomViewModel, $('#addRoom')[0]);
 </script>

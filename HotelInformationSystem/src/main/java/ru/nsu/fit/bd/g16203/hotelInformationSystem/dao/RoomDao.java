@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -76,12 +77,17 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
     @Override
     protected void checkDataCreate(Room obj) throws SQLException, WrongDataException {
-
+        if (obj.getCapacity() < 1) {
+            throw new WrongDataException( "Capacity must be >0" );
+        }
+        if (obj.getPrice() < 0) {
+            throw new WrongDataException( "Price must be positive" );
+        }
     }
 
     @Override
     protected void checkDataUpdate(Room obj) throws SQLException, WrongDataException {
-
+        checkDataCreate( obj );
     }
 
     @Override
@@ -115,4 +121,63 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
             }
         }
     }
+
+    @Override
+    public int getFreeRoomsCount() throws SQLException {
+        String sql = "select count(1) as count from(\n" +
+                "    select building_id,floor_num,room_num from room\n" +
+                "    except(\n" +
+                "        select r.building_id, r.floor_num, r.room_num from room r\n" +
+                "        join reservation re\n" +
+                "        on(\n" +
+                "            r.room_num = re.room_num and\n" +
+                "            r.floor_num = re.floor_num and\n" +
+                "            r.building_id = re.building_id\n" +
+                "        )\n" +
+                "        where arrival_date<=? and departure_date>=?\n" +
+                "    )\n" +
+                ")s;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                Date curDate = new Date();
+                statement.setDate( 1, java.sql.Date.valueOf( curDate.toString() ) );
+                statement.setDate( 2, java.sql.Date.valueOf( curDate.toString() ) );
+                ResultSet resultSet = statement.executeQuery();
+                resultSet.next();
+                return resultSet.getInt( "count" );
+            }
+        }
+    }
+
+    @Override
+    public int getFreeRoomsWithParams(int capacity, int price) throws SQLException {
+        String sql = "select count(1) as count from(\n" +
+                "    select  building_id, floor_num, room_num from room t\n" +
+                "    where capacity = ? and price = ?\n" +
+                "    except(\n" +
+                "        select r.building_id, r.floor_num, r.room_num from room r\n" +
+                "        join reservation re\n" +
+                "        on(\n" +
+                "            r.room_num = re.room_num and\n" +
+                "            r.floor_num = re.floor_num and\n" +
+                "            r.building_id = re.building_id\n" +
+                "        )\n" +
+                "        where arrival_date<=? and departure_date>=?\n" +
+                "        group by r.room_num, r.floor_num, r.building_id\n" +
+                "    );";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                Date curDate = new Date();
+                statement.setInt( 1, 1 );
+                statement.setInt( 2, 2 );
+                statement.setDate( 3, java.sql.Date.valueOf( curDate.toString() ) );
+                statement.setDate( 4, java.sql.Date.valueOf( curDate.toString() ) );
+                ResultSet resultSet = statement.executeQuery();
+                resultSet.next();
+                return resultSet.getInt( "count" );
+            }
+        }
+
+    }
+
 }

@@ -66,8 +66,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 statement.setString( 1, obj.getName() );
-                List<Building> buildings = parseResultSet( statement.executeQuery() );
-                if (!buildings.isEmpty()) {
+                if (statement.executeQuery().next()) {
                     throw new WrongDataException( "name is already used" );
                 }
             }
@@ -81,8 +80,8 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 statement.setString( 1, obj.getName() );
                 List<Building> buildings = parseResultSet( statement.executeQuery() );
-                for(Building building : buildings){
-                    if(building.getName().equals( obj.getName() ) && !building.getPK().equals( obj.getPK() )){
+                for (Building building : buildings) {
+                    if (building.getName().equals( obj.getName() ) && !building.getPK().equals( obj.getPK() )) {
                         throw new WrongDataException( "name is already used" );
                     }
                 }

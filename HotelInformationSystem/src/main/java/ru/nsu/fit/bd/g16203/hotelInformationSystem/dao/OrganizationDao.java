@@ -117,14 +117,11 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
     @Override
     public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
         //TODO check data
-        String sql = "select name, discount, client_id from(\n" +
-                "    select name, discount, r.client_id, count(*) from\n" +
+        String sql = "    select name, discount, r.client_id from\n" +
                 "        reservation r\n" +
                 "        join entity e on e.client_id = r.client_id\n" +
                 "\t\twhere ? <=arrival_date and ? >=departure_date\n" +
-                "    \tgroup by name, discount, r.client_id\n" +
-                "    )t\n" +
-                "where count>= ?;";
+                "    \tgroup by name, discount, r.client_id having count(*)>=?\n";
 
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
@@ -139,13 +136,10 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
     @Override
     public List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException {
         //TODO check data
-        String sql = "select name, discount, client_id from(\n" +
-                "    select name, discount, r.client_id, count(*) from\n" +
+        String sql = "    select name, discount, client_id from\n" +
                 "        reservation r\n" +
                 "        join entity e on e.client_id = r.client_id\n" +
-                "    \tgroup by name, discount, r.client_id\n" +
-                "    )t\n" +
-                "where count>=?;";
+                "    \tgroup by name, discount, r.client_id  having count(*)>=?\n";
 
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {

@@ -38,7 +38,7 @@ public class FloorDao extends AbstractJDBCDao<Floor, FloorId> implements IFloorD
 
     @Override
     protected String getIdComparisionStatementPart() {
-        return " WHERE floor_num = ? AND building_id = ?;";
+        return " WHERE floor_num = ? AND f.building_id = ?;";
     }
 
     @Override

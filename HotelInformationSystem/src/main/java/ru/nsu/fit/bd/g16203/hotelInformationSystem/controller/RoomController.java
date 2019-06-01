@@ -40,7 +40,7 @@ public class RoomController {
     @PostMapping("/building/{buildingId}/floor/{floorNum}/room/{roomNum}")
     public Room createRoom(@PathVariable int buildingId, @PathVariable int floorNum, @PathVariable int roomNum, @RequestBody Room room) throws PersistException, SQLException, WrongDataException {
         room.setPK( new RoomId( new FloorId( buildingId, floorNum ), roomNum ) );
-        roomService.create(room );
+        roomService.create( room );
         return room;
     }
 
@@ -52,5 +52,15 @@ public class RoomController {
     @RequestMapping("/page/{page}")
     public List<Room> getServices(@PathVariable int page) throws PersistException {
         return roomService.getAll( page );
+    }
+
+    @RequestMapping("/report/1")
+    public int getReport1() throws SQLException {
+        return roomService.getFreeRoomsCount();
+    }
+
+    @RequestMapping("/report/2")
+    public int getReport2(int price, int capacity) throws SQLException {
+        return roomService.getFreeRoomsWithParams( capacity, price );
     }
 }

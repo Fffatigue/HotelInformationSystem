@@ -50,4 +50,14 @@ public class RoomService implements IRoomService {
     public List<Room> getAllByFloor(int floorNum) throws SQLException {
         return roomDao.getAllByFloor( floorNum );
     }
+
+    @Override
+    public int getFreeRoomsCount() throws SQLException {
+        return roomDao.getFreeRoomsCount();
+    }
+
+    @Override
+    public int getFreeRoomsWithParams(int capacity, int price) throws SQLException {
+        return roomDao.getFreeRoomsWithParams( capacity, price );
+    }
 }

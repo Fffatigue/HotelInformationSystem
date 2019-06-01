@@ -10,4 +10,8 @@ import java.util.List;
 @Service
 public interface IRoomService extends GenericService<Room, RoomId> {
     public List<Room> getAllByFloor(int floorNum) throws SQLException;
+
+    public int getFreeRoomsCount() throws SQLException;
+
+    public int getFreeRoomsWithParams(int capacity, int price) throws SQLException;
 }
