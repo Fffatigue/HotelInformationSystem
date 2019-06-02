@@ -51,7 +51,12 @@ public class RoomController {
 
     @RequestMapping("/page/{page}")
     public List<Room> getServices(@PathVariable int page) throws PersistException {
-        return roomService.getAll( page );
+            return roomService.getAll(page);
+    }
+
+    @RequestMapping("/filter/{filter}")
+    public List<Room> getServices(@PathVariable String filter) throws PersistException {
+        return roomService.getAll(filter);
     }
 
     @RequestMapping("/report/1")

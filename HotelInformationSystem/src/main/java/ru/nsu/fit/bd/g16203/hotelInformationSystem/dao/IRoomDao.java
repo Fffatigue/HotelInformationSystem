@@ -13,4 +13,6 @@ public interface IRoomDao extends GenericDao<Room, RoomId> {
     public int getFreeRoomsCount() throws SQLException;
 
     public int getFreeRoomsWithParams(int capacity, int price) throws SQLException;
+
+    public List<Room> getAll(String filter) throws PersistException;
 }

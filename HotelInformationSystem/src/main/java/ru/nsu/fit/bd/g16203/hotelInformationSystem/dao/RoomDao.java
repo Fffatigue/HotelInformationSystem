@@ -180,4 +180,26 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
     }
 
+    @Override
+    public List<Room> getAll(String filter) throws PersistException {
+        List<Room> list;
+        String sql = getSelectQuery() +
+                " WHERE CAST(room_num as VARCHAR(9)) LIKE ? or CAST(floor_num as VARCHAR(9)) LIKE ? or name LIKE ? " +
+                "or CAST(capacity as VARCHAR(9)) LIKE ? or CAST(price as VARCHAR(9)) LIKE ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setString( 1, filter );
+                statement.setString( 2, filter );
+                statement.setString( 3, filter );
+                statement.setString( 4, filter );
+                statement.setString( 5, filter );
+                ResultSet rs = statement.executeQuery();
+                list = parseResultSet( rs );
+            }
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+        return list;
+    }
+
 }

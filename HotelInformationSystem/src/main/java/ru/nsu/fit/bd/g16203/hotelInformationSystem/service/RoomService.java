@@ -60,4 +60,9 @@ public class RoomService implements IRoomService {
     public int getFreeRoomsWithParams(int capacity, int price) throws SQLException {
         return roomDao.getFreeRoomsWithParams( capacity, price );
     }
+
+    @Override
+    public List<Room> getAll(String filter) throws PersistException {
+        return roomDao.getAll( filter );
+    }
 }

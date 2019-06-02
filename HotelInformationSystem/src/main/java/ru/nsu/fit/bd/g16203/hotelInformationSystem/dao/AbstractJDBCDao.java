@@ -66,7 +66,7 @@ public abstract class AbstractJDBCDao<T extends Entity, PK extends Serializable>
 
     protected abstract List<T> parseResultSet(ResultSet rs) throws SQLException;
 
-    private static final int ROWS_PER_PAGE = 10;
+    protected static final int ROWS_PER_PAGE = 10;
 
     @Override
     public T getByPK(PK primaryKey) throws PersistException {

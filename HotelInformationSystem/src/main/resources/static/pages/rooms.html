@@ -1,5 +1,7 @@
-<!--тут мы задаем таблицу с комнатами-->
 <div id="rooms" class="container">
+    <input data-bind="value: search" type="text" placeholder="Search"
+           style="width: 150px;">
+    <!--тут мы задаем таблицу с комнатами-->
     <table class="table table-striped">
         <!--первый столбик - название полей-->
         <tr>
@@ -166,6 +168,11 @@
         self.rooms = ko.observableArray();
         self.pagination = ko.observableArray();
 
+        self.search = ko.observable();
+        self.search.subscribe(function () {
+            self.init();
+        })
+
         /*задаем метод для работы с рест под названием ajax*/
         self.ajax = function (uri, method, data) {
             var request = {
@@ -197,7 +204,7 @@
             self.ajax(self.URI + 'rooms/building/' + room.buildingId() + '/floor/' +
                 room.floorNum() + '/room/' + room.roomNum(), 'POST', room).done(function (data) {
                 $('#addRoom').modal('hide');
-                window.location.reload();
+                self.init();
             }).error(function (xhr, thrownError) {
                 alert(JSON.parse(xhr.responseText).message);
             });
@@ -210,43 +217,61 @@
                 room.floorNum() + '/room/' + room.roomNum(), 'DELETE'
             ).done(function (data) {
                 if (data < localStorage.getItem("page")) {
-                    var href = '#/rooms/' + Number(data);
-                    window.location = href;
-                } else {
-                    window.location.reload();
+                    localStorage.setItem("page", data);
                 }
-
+                self.init();
             });
         }
 
         /*переход на другую страницу*/
         self.showPage = function (page) {
-            var href = '#/rooms/' + page.pageNum();
-            window.location = href;
+            localStorage.setItem("page", data);
+            self.init();
         }
 
 
-        /*инициализация массива страниц*/
-        self.ajax(self.URI + 'rooms/page', 'GET').done(function (data) {
-            for (var i = 1; i <= data; i++) {
-                self.pagination.push({
-                    pageNum: ko.observable(i),
-                    isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
-                })
-            }
-        })
+        self.init = function () {
+            self.rooms([]);
+            self.pagination([]);
 
-        /*инициализация массива комнат*/
-        self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
-            for (var i = 0; i < data.length; i++) {
-                self.rooms.push({
-                    roomNum: ko.observable(data[i].pk.roomNum),
-                    floorNum: ko.observable(data[i].pk.floorId.floorNum),
-                    buildingName: ko.observable(data[i].pk.floorId.buildingName),
-                    buildingId: ko.observable(data[i].pk.floorId.buildingId)
+            if (self.search() === '' || self.search() === undefined) {
+                /*инициализация массива страниц*/
+                self.ajax(self.URI + 'rooms/page', 'GET').done(function (data) {
+                    for (var i = 1; i <= data; i++) {
+                        self.pagination.push({
+                            pageNum: ko.observable(i),
+                            isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
+                        })
+                    }
+                })
+
+
+                /*инициализация массива комнат*/
+                self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        self.rooms.push({
+                            roomNum: ko.observable(data[i].pk.roomNum),
+                            floorNum: ko.observable(data[i].pk.floorId.floorNum),
+                            buildingName: ko.observable(data[i].pk.floorId.buildingName),
+                            buildingId: ko.observable(data[i].pk.floorId.buildingId)
+                        });
+                    }
+                });
+            } else {
+                /*инициализация массива комнат*/
+                self.ajax(self.URI + 'rooms/filter/' + self.search(), 'GET').done(function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        self.rooms.push({
+                            roomNum: ko.observable(data[i].pk.roomNum),
+                            floorNum: ko.observable(data[i].pk.floorId.floorNum),
+                            buildingName: ko.observable(data[i].pk.floorId.buildingName),
+                            buildingId: ko.observable(data[i].pk.floorId.buildingId)
+                        });
+                    }
                 });
             }
-        });
+        }
+        self.init();
     }
 
     function AddRoomViewModel() {
@@ -339,7 +364,7 @@
                         buildingId: ko.observable(data.pk)
                     })
                 }).error(function (xhr, thrownError) {
-                    console.log(building);
+                console.log(building);
                 alert(JSON.parse(xhr.responseText).message);
             });
         }
