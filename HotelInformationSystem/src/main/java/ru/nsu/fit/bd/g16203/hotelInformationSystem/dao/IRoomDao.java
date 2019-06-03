@@ -14,5 +14,7 @@ public interface IRoomDao extends GenericDao<Room, RoomId> {
 
     public int getFreeRoomsWithParams(int capacity, int price) throws SQLException;
 
-    public List<Room> getAll(String filter) throws PersistException;
+    public List<Room> getAll(String filter, String sortBy, boolean sortAsc) throws PersistException, WrongDataException;
+
+    public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException;
 }

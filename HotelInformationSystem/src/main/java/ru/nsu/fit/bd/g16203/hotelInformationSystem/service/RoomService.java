@@ -62,7 +62,13 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public List<Room> getAll(String filter) throws PersistException {
-        return roomDao.getAll( filter );
+    public List<Room> getAll(String filter, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
+        return roomDao.getAll( filter,sortBy,sortAsc );
     }
+
+    @Override
+    public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
+        return roomDao.getAll( page,sortBy,sortAsc );
+    }
+
 }

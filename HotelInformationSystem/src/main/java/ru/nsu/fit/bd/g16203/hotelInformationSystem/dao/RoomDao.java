@@ -181,11 +181,15 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     }
 
     @Override
-    public List<Room> getAll(String filter) throws PersistException {
+    public List<Room> getAll(String filter, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
         List<Room> list;
+        String order = sortAsc ? "asc" : "desc";
+        if (!sortBy.equals( "room_num" ) && !sortBy.equals( "name" )) {
+            throw new WrongDataException( "Wrong arg for sorting" );
+        }
         String sql = getSelectQuery() +
                 " WHERE CAST(room_num as VARCHAR(9)) LIKE ? or CAST(floor_num as VARCHAR(9)) LIKE ? or name LIKE ? " +
-                "or CAST(capacity as VARCHAR(9)) LIKE ? or CAST(price as VARCHAR(9)) LIKE ?";
+                "or CAST(capacity as VARCHAR(9)) LIKE ? or CAST(price as VARCHAR(9)) LIKE ?" + " ORDER BY " + sortBy + " " + order;
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 statement.setString( 1, filter );
@@ -193,6 +197,25 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
                 statement.setString( 3, filter );
                 statement.setString( 4, filter );
                 statement.setString( 5, filter );
+                ResultSet rs = statement.executeQuery();
+                list = parseResultSet( rs );
+            }
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+        return list;
+    }
+
+    @Override
+    public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
+        List<Room> list;
+        String order = sortAsc ? "asc" : "desc";
+        if (!sortBy.equals( "room_num" ) && !sortBy.equals( "name" )) {
+            throw new WrongDataException( "Wrong arg for sorting " + sortBy );
+        }
+        String sql = getSelectQuery() + " ORDER BY " + sortBy + " " + order + " LIMIT " + ROWS_PER_PAGE + " OFFSET " + String.valueOf( (page - 1) * ROWS_PER_PAGE );
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
                 ResultSet rs = statement.executeQuery();
                 list = parseResultSet( rs );
             }

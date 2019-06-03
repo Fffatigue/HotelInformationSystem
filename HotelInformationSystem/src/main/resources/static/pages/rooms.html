@@ -3,11 +3,11 @@
            style="width: 150px;">
     <!--тут мы задаем таблицу с комнатами-->
     <table class="table table-striped">
-        <!--первый столбик - название полей-->
-        <tr>
-            <td><b>Hotel name</b></td>
-            <td><b>Room</b></td>
-            <td><b>Options</b></td>
+        <!--первый столбик - название полей, дата бинд нужен для сортировки, айди тоже-->
+        <tr data-bind="click: sortFunction">
+            <td id="name"><b>Hotel name</b></td>
+            <td id="room_num"><b>Room</b></td>
+            <td id="options"><b>Options</b></td>
         </tr>
         <!--остальные столбики foreach проходит по массиву rooms, и мы перечисляем названия полей, которые нужно вывести или методы, которые нужно использовать-->
         <!-- ko foreach: rooms -->
@@ -164,6 +164,25 @@
     function RoomsViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
+
+        /*сортировка*/
+        self.sortBy = 'room_num';
+        self.sortAsc = true;
+
+        this.sortFunction = function () {
+            if (event.target.id === '' || event.target.id === 'options') {
+                return
+            }
+            if (self.sortBy === event.target.id)
+                self.sortAsc = !self.sortAsc;
+            else {
+                self.sortBy = event.target.id;
+                self.sortAsc = true;
+            }
+
+            self.init();
+        }
+
         /*инициализация массивов*/
         self.rooms = ko.observableArray();
         self.pagination = ko.observableArray();
@@ -247,7 +266,9 @@
 
 
                 /*инициализация массива комнат*/
-                self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+                self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page") + '?' + 'sortBy=' +
+                    self.sortBy + '&sortAsc=' + self.sortAsc, 'GET'
+                ).done(function (data) {
                     for (var i = 0; i < data.length; i++) {
                         self.rooms.push({
                             roomNum: ko.observable(data[i].pk.roomNum),
@@ -259,7 +280,8 @@
                 });
             } else {
                 /*инициализация массива комнат*/
-                self.ajax(self.URI + 'rooms/filter/' + self.search(), 'GET').done(function (data) {
+                self.ajax(self.URI + 'rooms/filter/' + self.search() + '?' + 'sortBy=' +
+                    self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
                     for (var i = 0; i < data.length; i++) {
                         self.rooms.push({
                             roomNum: ko.observable(data[i].pk.roomNum),
@@ -271,6 +293,7 @@
                 });
             }
         }
+
         self.init();
     }
 

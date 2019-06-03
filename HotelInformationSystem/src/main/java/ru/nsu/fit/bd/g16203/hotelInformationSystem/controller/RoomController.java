@@ -50,13 +50,13 @@ public class RoomController {
     }
 
     @RequestMapping("/page/{page}")
-    public List<Room> getServices(@PathVariable int page) throws PersistException {
-            return roomService.getAll(page);
+    public List<Room> getRooms(@PathVariable int page, @RequestParam String sortBy, @RequestParam boolean sortAsc) throws PersistException, WrongDataException {
+            return roomService.getAll(page, sortBy,sortAsc);
     }
 
     @RequestMapping("/filter/{filter}")
-    public List<Room> getServices(@PathVariable String filter) throws PersistException {
-        return roomService.getAll(filter);
+    public List<Room> getRooms(@PathVariable String filter, @RequestParam String sortBy, @RequestParam boolean sortAsc) throws PersistException, WrongDataException {
+        return roomService.getAll(filter, sortBy, sortAsc);
     }
 
     @RequestMapping("/report/1")
