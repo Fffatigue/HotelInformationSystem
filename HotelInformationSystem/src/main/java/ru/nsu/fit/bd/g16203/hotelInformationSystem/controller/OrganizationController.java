@@ -8,6 +8,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IOrganizationService;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -39,13 +40,14 @@ public class OrganizationController {
         return organization;
     }
 
-    @GetMapping("/report")
-    public List<Organization> getReport(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
-        if (beginDate != null && endDate != null) {
-            return organizationService.getOrganizationReservedMoreThenCountInPeriod( count, beginDate, endDate );
-        } else {
-            return organizationService.getOrganizationReservedMoreThenCount( count );
-        }
+    @GetMapping("/report/1")
+    public List<Organization> getReportWithDate(@RequestParam int count, @RequestParam LocalDate beginDate, @RequestParam LocalDate endDate) throws PersistException, SQLException {
+        return organizationService.getOrganizationReservedMoreThenCountInPeriod( count, beginDate, endDate );
+    }
+
+    @GetMapping("/report/2")
+    public List<Organization> getReportWithoutDate(@RequestParam int count) throws PersistException, SQLException {
+        return organizationService.getOrganizationReservedMoreThenCount( count );
     }
 
     @GetMapping("/page/{page}")

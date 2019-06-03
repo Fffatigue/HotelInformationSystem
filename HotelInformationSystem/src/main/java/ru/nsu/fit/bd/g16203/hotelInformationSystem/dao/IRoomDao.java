@@ -17,4 +17,6 @@ public interface IRoomDao extends GenericDao<Room, RoomId> {
     public List<Room> getAll(String filter, String sortBy, boolean sortAsc) throws PersistException, WrongDataException;
 
     public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException;
+
+    public RoomDao.RoomInfo getRoomInfo(RoomId roomId) throws PersistException;
 }

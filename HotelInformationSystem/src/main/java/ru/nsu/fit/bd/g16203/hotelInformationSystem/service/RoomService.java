@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IRoomDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.RoomDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
@@ -69,6 +70,11 @@ public class RoomService implements IRoomService {
     @Override
     public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
         return roomDao.getAll( page,sortBy,sortAsc );
+    }
+
+    @Override
+    public RoomDao.RoomInfo getRoomInfo(RoomId roomId) throws PersistException {
+        return roomDao.getRoomInfo( roomId );
     }
 
 }

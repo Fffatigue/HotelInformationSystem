@@ -6,12 +6,9 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -139,7 +136,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
                 ")s;";
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
-                Date curDate = new Date();
+                LocalDate curDate = LocalDate.now();
                 statement.setDate( 1, java.sql.Date.valueOf( curDate.toString() ) );
                 statement.setDate( 2, java.sql.Date.valueOf( curDate.toString() ) );
                 ResultSet resultSet = statement.executeQuery();
@@ -164,12 +161,13 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
                 "        )\n" +
                 "        where arrival_date<=? and departure_date>=?\n" +
                 "        group by r.room_num, r.floor_num, r.building_id\n" +
-                "    );";
+                "    )\n" +
+                ")l;";
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
-                Date curDate = new Date();
-                statement.setInt( 1, 1 );
-                statement.setInt( 2, 2 );
+                LocalDate curDate = LocalDate.now();
+                statement.setInt( 1, capacity );
+                statement.setInt( 2, price );
                 statement.setDate( 3, java.sql.Date.valueOf( curDate.toString() ) );
                 statement.setDate( 4, java.sql.Date.valueOf( curDate.toString() ) );
                 ResultSet resultSet = statement.executeQuery();
@@ -178,6 +176,91 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
             }
         }
 
+    }
+
+    @Override
+    public RoomInfo getRoomInfo(RoomId roomId) throws PersistException {
+        String sql = "\tselect capacity, price, arrival_date from room r\n" +
+                "\tjoin reservation re  \n" +
+                "\ton(\n" +
+                "            r.room_num = re.room_num and\n" +
+                "            r.floor_num = re.floor_num and\n" +
+                "            r.building_id = re.building_id\n" +
+                "    )\n" +
+                "\twhere r.room_num = ? and r.building_id = ? and r.floor_num = ? and arrival_date>?\n" +
+                "\torder by arrival_date asc\n" +
+                "limit 1;";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, roomId.getRoomNum() );
+                statement.setInt( 2, roomId.getFloorId().getBuildingId() );
+                statement.setInt( 3, roomId.getFloorId().getFloorNum() );
+                statement.setDate( 4, Date.valueOf( LocalDate.now() ) );
+                ResultSet rs = statement.executeQuery();
+                List<RoomInfo> list = parseRoomInfoSet( rs );
+                if (list == null || list.isEmpty()) {
+                    return null;
+                }
+                if (list.size() > 1) {
+                    throw new PersistException( "Received more than one record." );
+                }
+                return list.iterator().next();
+            }
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+    }
+
+    private List<RoomInfo> parseRoomInfoSet(ResultSet rs) throws SQLException {
+        List<RoomInfo> roomInfos = new ArrayList<>();
+        while (rs.next()) {
+            RoomInfo roomInfo = new RoomInfo();
+            roomInfos.add( roomInfo );
+            roomInfo.setArrivalDate( rs.getDate( "arrival_date" ).toLocalDate() );
+            roomInfo.setCapacity( rs.getInt( "capacity" ) );
+            roomInfo.setPrice( rs.getInt( "price" ) );
+        }
+        return roomInfos;
+    }
+
+    public class RoomInfo {
+        private LocalDate arrivalDate;
+        private int capacity;
+        private int price;
+
+        public RoomInfo() {
+
+        }
+
+        public RoomInfo(LocalDate arrivalDate, int capacity, int price) {
+            this.arrivalDate = arrivalDate;
+            this.capacity = capacity;
+            this.price = price;
+        }
+
+        public LocalDate getArrivalDate() {
+            return arrivalDate;
+        }
+
+        public void setArrivalDate(LocalDate arrivalDate) {
+            this.arrivalDate = arrivalDate;
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public int getPrice() {
+            return price;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
+        }
     }
 
     @Override

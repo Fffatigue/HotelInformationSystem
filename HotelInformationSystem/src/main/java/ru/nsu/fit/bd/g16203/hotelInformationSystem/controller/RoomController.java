@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.RoomDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
@@ -51,12 +52,12 @@ public class RoomController {
 
     @RequestMapping("/page/{page}")
     public List<Room> getRooms(@PathVariable int page, @RequestParam String sortBy, @RequestParam boolean sortAsc) throws PersistException, WrongDataException {
-            return roomService.getAll(page, sortBy,sortAsc);
+        return roomService.getAll( page, sortBy, sortAsc );
     }
 
     @RequestMapping("/filter/{filter}")
     public List<Room> getRooms(@PathVariable String filter, @RequestParam String sortBy, @RequestParam boolean sortAsc) throws PersistException, WrongDataException {
-        return roomService.getAll(filter, sortBy, sortAsc);
+        return roomService.getAll( filter, sortBy, sortAsc );
     }
 
     @RequestMapping("/report/1")
@@ -65,7 +66,13 @@ public class RoomController {
     }
 
     @RequestMapping("/report/2")
-    public int getReport2(int price, int capacity) throws SQLException {
+    public int getReport2(@RequestParam int price, @RequestParam int capacity) throws SQLException {
         return roomService.getFreeRoomsWithParams( capacity, price );
+    }
+
+    @RequestMapping("/report/3")
+    public RoomDao.RoomInfo getReport2(@RequestParam int roomNum, @RequestParam int floorNum, @RequestParam int buildingId) throws SQLException, PersistException {
+        FloorId floorId = new FloorId( buildingId, floorNum );
+        return roomService.getRoomInfo( new RoomId( floorId, roomNum ) );
     }
 }

@@ -1,0 +1,54 @@
+<div id=reportRoom3 class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputBuildingId"><p style="font-size: 30px"><b>Building ID : </b>
+            <input data-bind="value: buildingId" type="text" id="inputBuildingId" placeholder="Building id"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputFloorNum"><p style="font-size: 30px"><b>Floor : </b>
+            <input data-bind="value: floorNum" type="text" id="inputFloorNum" placeholder="Floor Number"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputRoomNum"><p style="font-size: 30px"><b>Room : </b>
+            <input data-bind="value: roomNum" type="text" id="inputRoomNum" placeholder="Room Number"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: ok" class="btn btn-primary">Ok</button>
+        <p style="font-size: 30px"><b>Closest arrival date : </b><span data-bind="text: arrivalDate"></span></p>
+        <p style="font-size: 30px"><b>Price : </b><span data-bind="text: price"></span></p>
+        <p style="font-size: 30px"><b>Capacity : </b><span data-bind="text: capacity"></span></p>
+    </dl>
+</div>
+
+<script>
+
+    function ReportRoom3ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/rooms/report/3';
+        self.price = ko.observable();
+        self.capacity = ko.observable();
+        self.floorNum = ko.observable();
+        self.buildingId = ko.observable();
+        self.roomNum = ko.observable();
+        self.arrivalDate = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.ok = function () {
+            self.ajax(self.URI + '?buildingId='+self.buildingId() + '&floorNum=' + self.floorNum() + '&roomNum=' + self.roomNum(), 'GET').done(function (data) {
+                self.capacity(data.capacity);
+                self.arrivalDate(data.arrivalDate);
+                self.price(data.price);
+            })
+        }
+
+    }
+    var reportRoom3ViewModel = new ReportRoom3ViewModel();
+    ko.applyBindings(reportRoom3ViewModel, $('#reportRoom3')[0]);
+</script>

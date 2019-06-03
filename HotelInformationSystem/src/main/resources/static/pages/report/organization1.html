@@ -1,0 +1,71 @@
+<div id=reportOrganization1 class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputCount"><p style="font-size: 30px"><b>Count : </b>
+            <input data-bind="value: count" type="text" id="inputCount" placeholder="Count"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px"><b>Date format : yyyy-mm-dd</b></p>
+        <label class="control-label" for="inputArrival"><p style="font-size: 30px"><b>Arrival : </b>
+            <input data-bind="value: arrival" type="text" id="inputArrival" placeholder="Arrival date"
+                   style="width: 300px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputDeparture"><p style="font-size: 30px"><b>Departure : </b>
+            <input data-bind="value: departure" type="text" id="inputDeparture" placeholder="Departure date"
+                   style="width: 300px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: withDate" class="btn btn-primary">With date</button>
+        <button data-bind="click: withoutDate" class="btn btn-primary">Without date</button>
+    </dl>
+
+    <!-- ko foreach: organizations -->
+    <tr>
+        <td><b data-bind="text: name"></b></td>
+    </tr>
+    <!-- /ko -->
+</div>
+
+<script>
+
+    function ReportOrganizationViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/organizations/report/';
+        self.organizations = ko.observableArray();
+        self.arrival = ko.observable();
+        self.departure = ko.observable();
+        self.count = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.withDate = function () {
+            self.ajax(self.URI + '1?count=' + self.count() + '&beginDate=' + self.arrival() +
+                '&endDate=' + self.departure(), 'GET').done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.organizations.push({
+                        name: ko.observable(data[i].name),
+                    });
+                }
+            })
+        }
+
+        self.withoutDate = function () {
+            self.ajax(self.URI + '2?count=' + self.count(), 'GET').done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.organizations.push({
+                        clientName: ko.observable(data[i].fullName),
+                    });
+                }
+            })
+        }
+
+    }
+
+    var reportOrganization1ViewModel = new ReportOrganizationViewModel();
+    ko.applyBindings(reportOrganization1ViewModel, $('#reportOrganization1')[0]);
+</script>

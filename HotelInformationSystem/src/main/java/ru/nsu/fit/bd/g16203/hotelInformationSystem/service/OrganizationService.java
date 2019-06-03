@@ -9,6 +9,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Organization;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class OrganizationService implements IOrganizationService{
     }
 
     @Override
-    public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
+    public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
         return organizationDao.getOrganizationReservedMoreThenCountInPeriod( count,beginDate,endDate );
     }
 

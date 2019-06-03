@@ -30,12 +30,26 @@ app.config(function ($routeProvider) {
             templateUrl: 'pages/room.html',
             controller: 'roomController'
         })
+        .when('/report/room/2',{
+            templateUrl :'pages/report/room2.html'
+        })
+        .when('/report/room/3',{
+            templateUrl :'pages/report/room3.html'
+        })
+        .when('/report/client/1',{
+            templateUrl :'pages/report/client1.html'
+        })
+        .when('/report/organization/1',{
+            templateUrl :'pages/report/organization1.html'
+        })
 
         // route for the contact page
         .when('/contact', {
             templateUrl: 'pages/contact.html',
             controller: 'contactController'
-        });
+        }).when('/report/room/1',{
+            templateUrl :'pages/report/room1.html'
+    });
 });
 
 //$routeParams - объект, полями которого являются переданные в строке параметры, я их просто добавлял в локал сторейдж,

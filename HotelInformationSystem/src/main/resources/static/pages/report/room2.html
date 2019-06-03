@@ -1,0 +1,44 @@
+<div id=reportRoom2 class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputPrice"><p style="font-size: 30px"><b>Price : </b>
+            <input data-bind="value: price" type="text" id="inputPrice" placeholder="Price"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputCapacity"><p style="font-size: 30px"><b>Capacity : </b>
+            <input data-bind="value: capacity" type="text" id="inputCapacity" placeholder="Capacity"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: ok" class="btn btn-primary">Ok</button>
+        <p style="font-size: 30px"><b>Count of free rooms : </b><span data-bind="text: count"></span></p>
+    </dl>
+</div>
+
+<script>
+
+    function ReportRoom2ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/rooms/report/2';
+        self.count = ko.observable();
+        self.price = ko.observable();
+        self.capacity = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.ok = function () {
+            self.ajax(self.URI + '?price='+self.price() + '&capacity=' + self.capacity(), 'GET').done(function (data) {
+                self.count(data);
+            })
+        }
+
+    }
+    var reportRoom2ViewModel = new ReportRoom2ViewModel();
+    ko.applyBindings(reportRoom2ViewModel, $('#reportRoom2')[0]);
+</script>

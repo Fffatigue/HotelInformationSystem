@@ -1,0 +1,33 @@
+<div id=reportRoom1 class="jumbotron text-center">
+    <dl>
+        <p style="font-size: 30px"><b>Count of free rooms : </b><span data-bind="text: count"></span></p>
+    </dl>
+</div>
+
+<script>
+
+    function ReportRoom1ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/rooms/report/1';
+        self.count = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+        self.ajax(self.URI, 'GET').done(function (data) {
+            self.count(data);
+        })
+
+    }
+
+    var reportRoom1ViewModel = new ReportRoom1ViewModel();
+    ko.applyBindings(reportRoom1ViewModel, $('#reportRoom1')[0]);
+</script>

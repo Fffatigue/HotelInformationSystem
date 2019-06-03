@@ -1,0 +1,64 @@
+<div id=reportClient1 class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputPrice"><p style="font-size: 30px"><b>Price : </b>
+            <input data-bind="value: price" type="text" id="inputPrice" placeholder="Price"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputCapacity"><p style="font-size: 30px"><b>Capacity : </b>
+            <input data-bind="value: capacity" type="text" id="inputCapacity" placeholder="Capacity"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px"><b>Date format : yyyy-mm-dd</b></p>
+        <label class="control-label" for="inputArrival"><p style="font-size: 30px"><b>Arrival : </b>
+            <input data-bind="value: arrival" type="text" id="inputArrival" placeholder="Arrival date"
+                   style="width: 300px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputDeparture"><p style="font-size: 30px"><b>Departure : </b>
+            <input data-bind="value: departure" type="text" id="inputDeparture" placeholder="Departure date"
+                   style="width: 300px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: ok" class="btn btn-primary">Ok</button>
+    </dl>
+
+    <!-- ko foreach: clients -->
+    <tr>
+        <td><b data-bind="text: clientName"></b></td>
+    </tr>
+    <!-- /ko -->
+</div>
+
+<script>
+
+    function ReportClient1ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/clients/report/1';
+        self.clients = ko.observableArray();
+        self.arrival = ko.observable();
+        self.departure = ko.observable();
+        self.price = ko.observable();
+        self.capacity = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.ok = function () {
+            self.ajax(self.URI + '?price=' + self.price() + '&capacity=' + self.capacity() + '&beginDate=' + self.arrival() +
+                '&endDate=' + self.departure(), 'GET').done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.clients.push({
+                        clientName: ko.observable(data[i].fullName),
+                    });
+                }
+            })
+        }
+
+    }
+
+    var reportClient1ViewModel = new ReportClient1ViewModel();
+    ko.applyBindings(reportClient1ViewModel, $('#reportClient1')[0]);
+</script>

@@ -1,6 +1,7 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
@@ -8,6 +9,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IClientService;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -44,8 +46,8 @@ public class ClientController {
         return clientService.getAll( page );
     }
 
-    @GetMapping("/report")
-    public List<Client> getReport(int price, int capacity, Date beginDate, Date endDate) throws PersistException, SQLException {
+    @GetMapping("/report/1")
+    public List<Client> getReport(@RequestParam int price, @RequestParam int capacity, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
         return clientService.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
     }
 }

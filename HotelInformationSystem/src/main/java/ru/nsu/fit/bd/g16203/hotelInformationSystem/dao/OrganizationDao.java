@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -115,8 +116,7 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
     }
 
     @Override
-    public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, Date beginDate, Date endDate) throws PersistException, SQLException {
-        //TODO check data
+    public List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
         String sql = "    select name, discount, r.client_id from\n" +
                 "        reservation r\n" +
                 "        join entity e on e.client_id = r.client_id\n" +
@@ -135,8 +135,7 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
 
     @Override
     public List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException {
-        //TODO check data
-        String sql = "    select name, discount, client_id from\n" +
+        String sql = "    select name, discount, r.client_id from\n" +
                 "        reservation r\n" +
                 "        join entity e on e.client_id = r.client_id\n" +
                 "    \tgroup by name, discount, r.client_id  having count(*)>=?\n";

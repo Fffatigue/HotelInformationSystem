@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +87,7 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
     }
 
     @Override
-    public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, Date beginDate, Date endDate) throws PersistException, SQLException {
-       //TODO add data check
+    public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
         String sql = "select full_name, re.client_id from\n" +
                 "    reservation re\n" +
                 "    join room r\n" +
@@ -96,15 +96,16 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
                 "        r.floor_num = re.floor_num and\n" +
                 "        r.building_id = re.building_id\n" +
                 "    )\n" +
-                "    where capacity=? and price=? and arrival_date>=to_date(?,'DD-MM-YYYY') and\n" +
-                "    arrival_date<=to_date(?,'DD-MM-YYYY')\n" +
-                "    join individual on re.client_id = individual.client_id;";
+                "    join individual on re.client_id = individual.client_id"+
+                "    where capacity=? and price=? and arrival_date>=? and\n" +
+                "    arrival_date<=?\n";
 
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
                 statement.setInt( 1, capacity );
                 statement.setInt( 2, price );
                 statement.setDate( 3, java.sql.Date.valueOf( beginDate.toString() ) );
+                statement.setDate( 4, java.sql.Date.valueOf( endDate.toString() ) );
                 return parseResultSet( statement.executeQuery() );
             }
         }
