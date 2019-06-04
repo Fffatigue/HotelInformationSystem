@@ -181,7 +181,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
     public RoomInfo getRoomInfo(RoomId roomId) throws PersistException {
         String sql = "\tselect capacity, price, arrival_date from room r\n" +
-                "\tjoin reservation re  \n" +
+                "\tleft outer join reservation re  \n" +
                 "\ton(\n" +
                 "            r.room_num = re.room_num and\n" +
                 "            r.floor_num = re.floor_num and\n" +
@@ -266,6 +266,7 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     @Override
     public List<Room> getAll(String filter, String sortBy, boolean sortAsc) throws PersistException, WrongDataException {
         List<Room> list;
+        filter = '%' + filter + '%';
         String order = sortAsc ? "asc" : "desc";
         if (!sortBy.equals( "room_num" ) && !sortBy.equals( "name" )) {
             throw new WrongDataException( "Wrong arg for sorting" );

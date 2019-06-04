@@ -12,13 +12,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Service
-public class BuildingService implements IBuildingService{
+public class BuildingService implements IBuildingService {
     @Autowired
     private IBuildingDao buildingDao;
 
     @Override
     public Building getByPK(Integer primaryKey) throws PersistException {
-        return buildingDao.getByPK(primaryKey);
+        return buildingDao.getByPK( primaryKey );
     }
 
     @Override
@@ -28,21 +28,36 @@ public class BuildingService implements IBuildingService{
 
     @Override
     public void update(Building obj) throws PersistException, SQLException, WrongDataException {
-        buildingDao.update(obj);
+        buildingDao.update( obj );
     }
 
     @Override
     public void delete(Integer primaryKey) throws PersistException, WrongDataException {
-        buildingDao.delete(primaryKey);
+        buildingDao.delete( primaryKey );
     }
 
     @Override
     public void create(Building obj) throws PersistException, SQLException, WrongDataException {
-        buildingDao.create(obj);
+        buildingDao.create( obj );
     }
 
     @Override
     public List<Building> getAll(int page) throws PersistException {
-        return buildingDao.getAll(page);
+        return buildingDao.getAll( page );
+    }
+
+    @Override
+    public void insertAvailableService(Integer buildingId, Integer serviceId) throws SQLException {
+        buildingDao.insertAvailableService( buildingId, serviceId );
+    }
+
+    @Override
+    public void deleteAvailableService(Integer buildingId, Integer serviceId) throws SQLException {
+        buildingDao.deleteAvailableService( buildingId, serviceId );
+    }
+
+    @Override
+    public List<ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service> getAvailableServices(Integer buildingId) throws SQLException {
+        return buildingDao.getAvailableServices( buildingId );
     }
 }

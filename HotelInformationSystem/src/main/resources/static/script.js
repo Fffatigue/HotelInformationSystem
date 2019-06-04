@@ -25,10 +25,18 @@ app.config(function ($routeProvider) {
             templateUrl: 'pages/floors.html',
             controller: 'floorsController'
         })
+        .when('/buildings/:pageNum', {
+            templateUrl: 'pages/buildings.html',
+            controller: 'buildingsController'
+        })
         //здесь роутинг с параметрами параметры обозначаются :param
         .when('/building/:buildingId/floor/:floorNum/room/:roomNum', {
             templateUrl: 'pages/room.html',
             controller: 'roomController'
+        })
+        .when('/building/:buildingId', {
+            templateUrl: 'pages/building.html',
+            controller: 'buildingController'
         })
         .when('/report/room/2',{
             templateUrl :'pages/report/room2.html'
@@ -61,12 +69,21 @@ app.controller('floorsController', function ($scope, $routeParams) {
     localStorage.setItem("page", $routeParams.pageNum);
 });
 
+app.controller('buildingsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
+
 
 app.controller('roomController', function ($scope, $routeParams) {
     $scope.buildingId = $routeParams.buildingId;
     localStorage.setItem("buildingId", $routeParams.buildingId);
     localStorage.setItem("floorNum", $routeParams.floorNum);
     localStorage.setItem("roomNum", $routeParams.roomNum);
+});
+
+app.controller('buildingController', function ($scope, $routeParams) {
+    $scope.buildingId = $routeParams.buildingId;
+    localStorage.setItem("buildingId", $routeParams.buildingId);
 });
 
 

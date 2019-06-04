@@ -2,6 +2,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.dao;
 
 import org.springframework.stereotype.Repository;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Building;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -100,5 +101,53 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
             building.setName( rs.getString( "name" ) );
         }
         return buildings;
+    }
+
+    @Override
+    public void insertAvailableService(Integer buildingId, Integer serviceId) throws SQLException {
+        String sql = "insert into building_service values (?,?)";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, buildingId );
+                statement.setInt( 2, serviceId );
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public void deleteAvailableService(Integer buildingId, Integer serviceId) throws SQLException {
+        String sql = "delete from building_service where building_id = ? and service_id = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, buildingId );
+                statement.setInt( 2, serviceId );
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public List<Service> getAvailableServices(Integer buildingId) throws SQLException {
+        String sql = "select from building_service where building_id = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, buildingId );
+                return parseServiceResultSet( statement.executeQuery() );
+            }
+        }
+    }
+
+    private List<Service> parseServiceResultSet(ResultSet rs) throws SQLException {
+        List<Service> services = new ArrayList<>();
+        while (rs.next()) {
+            Service service = new Service();
+            Integer serviceId = rs.getInt( "service_id" );
+            service.setPK( serviceId );
+            service.setPrice( rs.getInt( "price" ) );
+            service.setName( rs.getString( "name" ) );
+            services.add( service );
+        }
+        return services;
     }
 }

@@ -1,0 +1,63 @@
+<div id=building class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputBuildingName"><p style="font-size: 30px"><b>Building : </b>
+            <input data-bind="value: buildingName" type="text" id="inputBuildingName" placeholder="Building name"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px">
+            <button data-bind="click: accept" class="btn btn-primary">Accept</button>
+            <button data-bind="click: deleteBuilding" class="btn">Delete</button>
+            <button data-bind="click: cancel" class="btn">Cancel</button>
+        </p>
+    </dl>
+</div>
+
+<script>
+
+    function BuildingViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.buildingName = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+        self.ajax(self.URI + 'buildings/id/' + +localStorage.getItem('buildingId'), 'GET').done(function (data) {
+            self.buildingName(data.name);
+        })
+
+        self.accept = function () {
+            self.ajax(self.URI + 'buildings/id/' + localStorage.getItem('buildingId'), 'PUT', {
+                name: self.buildingName(),
+            }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        self.deleteBuilding = function () {
+            self.ajax(self.URI + 'buildings/id/' + localStorage.getItem('buildingId'), 'DELETE')
+                .done(function () {
+                    var href = '#/buildings/' + 1;
+                    window.location = href;
+                })
+                .error(function (xhr, thrownError) {
+                    alert(JSON.parse(xhr.responseText).message);
+                });
+        }
+
+        self.cancel = function () {
+            var href = '#/buildings/' + 1;
+            window.location = href;
+        }
+    }
+
+    var buildingViewModel = new BuildingViewModel();
+    ko.applyBindings(buildingViewModel, $('#building')[0]);
+</script>

@@ -1,0 +1,162 @@
+<div id="buildings" class="container">
+    <table class="table table-striped">
+        <tr>
+            <td><b>Hotel name</b></td>
+            <td><b>Options</b></td>
+        </tr>
+        <!-- ko foreach: buildings -->
+        <tr>
+            <td><b data-bind="text: name"></b></td>
+            <td>
+                <button data-bind="click: $parent.beginDetails" class="btn">Details</button>
+                <button data-bind="click: $parent.remove" class="btn">Delete</button>
+            </td>
+        </tr>
+        <!-- /ko -->
+    </table>
+    <button data-bind="click: beginAdd" class="btn">Add Building</button>
+
+    <div class="w3-center">
+        <div id="pagination" class="w3-bar">
+            <!-- ko foreach: pagination -->
+            <span data-bind="visible : isCurrentPage"><button data-bind="click: $parent.showPage"
+                                                              class="w3-button w3-blue"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <span data-bind="visible : !isCurrentPage()"><button data-bind="click: $parent.showPage"
+                                                                 class="w3-button"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+
+<div id="addBuilding" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addDialogLabel">Add Building</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputBuilding">Building</label>
+                <div class="controls">
+                    <input data-bind="value: buildingName" type="text" id="inputBuilding" placeholder="Building name"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addBuilding" class="btn btn-primary">Add Building</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function BuildingsViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.buildings = ko.observableArray();
+        self.pagination = ko.observableArray();
+
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.beginAdd = function () {
+            $('#addBuilding').modal('show');
+        }
+
+        self.beginDetails = function (building) {
+            var href = '#/building/' + building.buildingId();
+            window.location = href
+        }
+
+        self.add = function (building) {
+            self.ajax(self.URI + 'buildings/', 'POST', building).done(function (data) {
+                window.location.reload();
+            });
+        }
+
+        self.remove = function (building) {
+            self.ajax(self.URI + 'buildings/id/' + building.buildingId(), 'DELETE'
+            ).done(function (data) {
+                if (data < localStorage.getItem("page")) {
+                    var href = '#/buildings/' + Number(data);
+                    window.location = href;
+                } else {
+                    window.location.reload();
+                }
+
+            });
+        }
+
+        self.showPage = function (page) {
+            var href = '#/buildings/' + page.pageNum();
+            window.location = href;
+        }
+
+
+        self.ajax(self.URI + 'buildings/page', 'GET').done(function (data) {
+            for (var i = 1; i <= data; i++) {
+                self.pagination.push({
+                    pageNum: ko.observable(i),
+                    isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
+                })
+            }
+        })
+
+        self.ajax(self.URI + 'buildings/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+            for (var i = 0; i < data.length; i++) {
+                self.buildings.push({
+                    name: ko.observable(data[i].name),
+                    buildingId: ko.observable(data[i].pk)
+                });
+            }
+        });
+    }
+
+    function AddBuildingViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.buildingName = ko.observable();
+
+        self.addBuilding = function () {
+            $('#addBuilding').modal('hide');
+            buildingsViewModel.add({
+                name: self.buildingName
+
+            });
+            self.buildingName();
+        }
+    }
+
+    var buildingsViewModel = new BuildingsViewModel();
+    var addBuildingViewModel = new AddBuildingViewModel();
+    ko.applyBindings(buildingsViewModel, $('#buildings')[0]);
+    ko.applyBindings(addBuildingViewModel, $('#addBuilding')[0]);
+</script>
