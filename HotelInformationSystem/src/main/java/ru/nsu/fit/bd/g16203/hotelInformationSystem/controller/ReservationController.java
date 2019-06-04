@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Reservation;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IReservationService;
 
 import java.sql.SQLException;
@@ -30,6 +31,21 @@ public class ReservationController {
     public void updateReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException, SQLException, WrongDataException {
         reservation.setPK( reservationId );
         reservationService.update( reservation );
+    }
+
+    @PostMapping("/id/{reservationId}/services/{serviceId}")
+    public void updateBuildingServices(@PathVariable int reservationId, @PathVariable int serviceId) throws PersistException, SQLException, WrongDataException {
+        reservationService.insertAvailableService( reservationId, serviceId );
+    }
+
+    @DeleteMapping("/id/{reservationId}/services/{serviceId}")
+    public void deleteBuildingServices(@PathVariable int reservationId, @PathVariable int serviceId) throws PersistException, SQLException, WrongDataException {
+        reservationService.deleteAvailableService( reservationId, serviceId );
+    }
+
+    @GetMapping("/id/{reservationId}/services")
+    public List<Service> deleteBuildingServices(@PathVariable int reservationId) throws PersistException, SQLException, WrongDataException {
+        return reservationService.getAvailableServices( reservationId );
     }
 
     @PostMapping("/id/{reservationId}")

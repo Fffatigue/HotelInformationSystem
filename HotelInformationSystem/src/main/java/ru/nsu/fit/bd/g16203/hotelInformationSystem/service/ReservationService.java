@@ -44,4 +44,19 @@ public class ReservationService implements IReservationService {
     public List<Reservation> getAll(int page) throws PersistException {
         return reservationDao.getAll(page);
     }
+
+    @Override
+    public void insertAvailableService(Integer reservationId, Integer serviceId) throws SQLException {
+        reservationDao.insertAvailableService( reservationId, serviceId );
+    }
+
+    @Override
+    public void deleteAvailableService(Integer buildingId, Integer serviceId) throws SQLException {
+        reservationDao.deleteAvailableService( buildingId, serviceId );
+    }
+
+    @Override
+    public List<ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service> getAvailableServices(Integer reservationId) throws SQLException {
+        return reservationDao.getAvailableServices( reservationId );
+    }
 }

@@ -113,6 +113,41 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     }
 
     @Override
+    public void insertAvailableService(Integer reservationId, Integer serviceId) throws SQLException {
+        String sql = "insert into used_service values (?,?)";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, reservationId );
+                statement.setInt( 2, serviceId );
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public void deleteAvailableService(Integer reservationId, Integer serviceId) throws SQLException {
+        String sql = "delete from used_service where reservation_id = ? and service_id = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, reservationId );
+                statement.setInt( 2, serviceId );
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public List<Service> getAvailableServices(Integer reservationId) throws SQLException {
+        String sql = "select from used_service where used_id = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, reservationId );
+                return parseServiceResultSet( statement.executeQuery() );
+            }
+        }
+    }
+
+    @Override
     protected List<Reservation> parseResultSet(ResultSet rs) throws SQLException {
         List<Reservation> reservations = new ArrayList<>();
 
@@ -135,5 +170,18 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
         }
 
         return reservations;
+    }
+
+    private List<Service> parseServiceResultSet(ResultSet rs) throws SQLException {
+        List<Service> services = new ArrayList<>();
+        while (rs.next()) {
+            Service service = new Service();
+            Integer serviceId = rs.getInt( "service_id" );
+            service.setPK( serviceId );
+            service.setPrice( rs.getInt( "price" ) );
+            service.setName( rs.getString( "name" ) );
+            services.add( service );
+        }
+        return services;
     }
 }
