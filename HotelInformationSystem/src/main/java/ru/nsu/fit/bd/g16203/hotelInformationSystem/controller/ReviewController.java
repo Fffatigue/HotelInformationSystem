@@ -30,7 +30,7 @@ public class ReviewController {
         reviewService.update( review );
     }
 
-    @PostMapping("/id/{reviewId}")
+    @PostMapping("/id")
     public Review createReview(@PathVariable int reviewId, @RequestBody Review review) throws PersistException {
         review.setPK( reviewId );
         reviewService.create( review );

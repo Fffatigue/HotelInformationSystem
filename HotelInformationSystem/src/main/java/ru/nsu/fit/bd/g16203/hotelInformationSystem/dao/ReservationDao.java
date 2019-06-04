@@ -22,7 +22,7 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     @Override
     public String getCreateQuery() {
         return "INSERT INTO reservation (reservation_id, client_id, arrival_date, departure_date, room_num, building_id, floor_num) \n" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?);";
+                "VALUES (DEFAULT, ?, ?, ?, ?, ?, ?);";
     }
 
     @Override
@@ -59,13 +59,12 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Reservation obj) throws SQLException {
-        statement.setInt(1, obj.getPK());
-        statement.setInt(2, obj.getClientId());
-        statement.setDate (3, obj.getArrivalDate());
-        statement.setDate (4, obj.getDepartureDate());
-        statement.setInt(5, obj.getRoomId().getRoomNum());
-        statement.setInt(6, obj.getRoomId().getFloorId().getBuildingId());
-        statement.setInt(7, obj.getRoomId().getFloorId().getFloorNum());
+        statement.setInt(1, obj.getClientId());
+        statement.setDate (2, obj.getArrivalDate());
+        statement.setDate (3, obj.getDepartureDate());
+        statement.setInt(4, obj.getRoomId().getRoomNum());
+        statement.setInt(5, obj.getRoomId().getFloorId().getBuildingId());
+        statement.setInt(6, obj.getRoomId().getFloorId().getFloorNum());
     }
 
     @Override

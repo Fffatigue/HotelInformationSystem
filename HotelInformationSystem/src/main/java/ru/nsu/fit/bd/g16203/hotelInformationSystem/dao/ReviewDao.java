@@ -21,7 +21,7 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
     @Override
     public String getCreateQuery() {
         return "INSERT INTO review (review_id, score, comment, reservation_id) \n" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?);";
+                "VALUES (DEFAULT, ?, ?, ?);";
     }
 
     @Override
@@ -54,10 +54,9 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Review obj) throws SQLException {
-        statement.setInt(1, obj.getPK());
-        statement.setInt(2, obj.getScore());
-        statement.setString(3, obj.getComment());
-        statement.setInt(4, obj.getReservationId());
+        statement.setInt(1, obj.getScore());
+        statement.setString(2, obj.getComment());
+        statement.setInt(3, obj.getReservationId());
     }
 
     @Override

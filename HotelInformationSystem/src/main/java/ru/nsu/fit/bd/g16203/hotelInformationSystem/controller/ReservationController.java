@@ -30,8 +30,8 @@ public class ReservationController {
         reservationService.update( reservation );
     }
 
-    @PostMapping("/id/{reservationId}")
-    public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException {
+    @PostMapping("/id")
+    public Reservation createReservation(@RequestBody Reservation reservation) throws PersistException {
         reservation.setPK( reservationId );
         reservationService.create( reservation );
         return reservation;
