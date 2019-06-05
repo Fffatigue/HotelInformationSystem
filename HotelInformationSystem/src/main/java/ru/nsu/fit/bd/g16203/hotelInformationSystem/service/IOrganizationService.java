@@ -14,4 +14,5 @@ import java.util.List;
 public interface IOrganizationService extends GenericService<Organization, Integer> {
     List<Organization> getOrganizationReservedMoreThenCountInPeriod(int count, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException;
     List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException;
+    List<Organization> getOrganizationReservedInPeriod(LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException;
 }

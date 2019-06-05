@@ -1,0 +1,163 @@
+<div id="organizations" class="container">
+    <table class="table table-striped">
+        <tr>
+            <td><b>Hotel name</b></td>
+            <td><b>Options</b></td>
+        </tr>
+        <!-- ko foreach: organizations -->
+        <tr>
+            <td><b data-bind="text: name"></b></td>
+            <td>
+                <button data-bind="click: $parent.beginDetails" class="btn">Details</button>
+                <button data-bind="click: $parent.remove" class="btn">Delete</button>
+            </td>
+        </tr>
+        <!-- /ko -->
+    </table>
+    <button data-bind="click: beginAdd" class="btn">Add Organization</button>
+
+    <div class="w3-center">
+        <div id="pagination" class="w3-bar">
+            <!-- ko foreach: pagination -->
+            <span data-bind="visible : isCurrentPage"><button data-bind="click: $parent.showPage"
+                                                              class="w3-button w3-blue"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <span data-bind="visible : !isCurrentPage()"><button data-bind="click: $parent.showPage"
+                                                                 class="w3-button"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+
+<div id="addOrganization" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addDialogLabel">Add Organization</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputOrganization">Organization</label>
+                <div class="controls">
+                    <input data-bind="value: organizationName" type="text" id="inputOrganization" placeholder="Organization name"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addOrganization" class="btn btn-primary">Add Organization</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function OrganizationsViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.organizations = ko.observableArray();
+        self.pagination = ko.observableArray();
+
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.beginAdd = function () {
+            $('#addOrganization').modal('show');
+        }
+
+        self.beginDetails = function (organization) {
+            var href = '#/organization/' + organization.organizationId();
+            window.location = href
+        }
+
+        self.add = function (organization) {
+            self.ajax(self.URI + 'organizations/', 'POST', organization).done(function (data) {
+                window.location.reload();
+            });
+        }
+
+        self.remove = function (organization) {
+            self.ajax(self.URI + 'organizations/id/' + organization.organizationId(), 'DELETE'
+            ).done(function (data) {
+                if (data < localStorage.getItem("page")) {
+                    var href = '#/organizations/' + Number(data);
+                    window.location = href;
+                } else {
+                    window.location.reload();
+                }
+
+            });
+        }
+
+        self.showPage = function (page) {
+            var href = '#/organizations/' + page.pageNum();
+            window.location = href;
+        }
+
+
+        self.ajax(self.URI + 'organizations/page', 'GET').done(function (data) {
+            for (var i = 1; i <= data; i++) {
+                self.pagination.push({
+                    pageNum: ko.observable(i),
+                    isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
+                })
+            }
+        })
+
+        self.ajax(self.URI + 'organizations/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+            for (var i = 0; i < data.length; i++) {
+                self.organizations.push({
+                    name: ko.observable(data[i].name),
+                    organizationId: ko.observable(data[i].pk)
+                });
+            }
+        });
+    }
+
+    function AddOrganizationViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.organizationName = ko.observable();
+
+        self.addOrganization = function () {
+            $('#addOrganization').modal('hide');
+            organizationsViewModel.add({
+                name: self.organizationName
+
+            });
+            self.organizationName();
+        }
+    }
+
+    var organizationsViewModel = new OrganizationsViewModel();
+    var addOrganizationViewModel = new AddOrganizationViewModel();
+    ko.applyBindings(organizationsViewModel, $('#organizations')[0]);
+    ko.applyBindings(addOrganizationViewModel, $('#addOrganization')[0]);
+</script>
+</script>

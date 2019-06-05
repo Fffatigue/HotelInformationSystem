@@ -147,4 +147,20 @@ public class OrganizationDao extends AbstractJDBCDao<Organization, Integer> impl
             }
         }
     }
+
+    @Override
+    public List<Organization> getOrganizationReservedInPeriod(LocalDate beginDate, LocalDate endDate) throws SQLException {
+        String sql = "select r.client_id, e.name from reservation r\n" +
+                "join entity e on e.client_id = r.client_id\n" +
+                "where ?<=arrival_date and ?>=departure_date\n" +
+                "group by r.client_id, e.name;";
+
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setDate( 1, java.sql.Date.valueOf(beginDate));
+                statement.setDate( 2, java.sql.Date.valueOf(endDate));
+                return parseResultSet( statement.executeQuery() );
+            }
+        }
+    }
 }

@@ -57,4 +57,9 @@ public class OrganizationService implements IOrganizationService{
     public List<Organization> getOrganizationReservedMoreThenCount(int count) throws PersistException, SQLException {
         return organizationDao.getOrganizationReservedMoreThenCount( count );
     }
+
+    @Override
+    public List<Organization> getOrganizationReservedInPeriod(LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
+        return organizationDao.getOrganizationReservedInPeriod(beginDate, endDate);
+    }
 }

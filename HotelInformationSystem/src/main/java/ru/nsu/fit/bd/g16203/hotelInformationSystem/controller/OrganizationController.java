@@ -1,6 +1,7 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
@@ -41,7 +42,9 @@ public class OrganizationController {
     }
 
     @GetMapping("/report/1")
-    public List<Organization> getReportWithDate(@RequestParam int count, @RequestParam LocalDate beginDate, @RequestParam LocalDate endDate) throws PersistException, SQLException {
+    public List<Organization> getReportWithDate(@RequestParam int count,
+                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate,
+                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
         return organizationService.getOrganizationReservedMoreThenCountInPeriod( count, beginDate, endDate );
     }
 
@@ -50,8 +53,19 @@ public class OrganizationController {
         return organizationService.getOrganizationReservedMoreThenCount( count );
     }
 
+    @GetMapping("/report/11")
+    public List<Organization> getReportWithDate2(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate,
+                                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
+        return organizationService.getOrganizationReservedInPeriod(beginDate, endDate );
+    }
+
     @GetMapping("/page/{page}")
     public List<Organization> getOrganizations(@PathVariable int page) throws PersistException {
         return organizationService.getAll( page );
+    }
+
+    @GetMapping("/page")
+    public int getPageNum() throws SQLException {
+        return organizationService.getPageNum();
     }
 }
