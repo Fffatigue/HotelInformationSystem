@@ -33,6 +33,10 @@ app.config(function ($routeProvider) {
             templateUrl: 'pages/organizations.html',
             controller: 'organizationsController'
         })
+        .when('/reservations/:pageNum', {
+            templateUrl: 'pages/reservations.html',
+            controller: 'reservationsController'
+        })
         //здесь роутинг с параметрами параметры обозначаются :param
         .when('/building/:buildingId/floor/:floorNum/room/:roomNum', {
             templateUrl: 'pages/room.html',
@@ -82,6 +86,10 @@ app.controller('buildingsController', function ($scope, $routeParams) {
 });
 
 app.controller('organizationsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
+
+app.controller('reservationsController', function ($scope, $routeParams) {
     localStorage.setItem("page", $routeParams.pageNum);
 });
 

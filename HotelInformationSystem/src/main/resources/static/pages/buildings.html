@@ -148,7 +148,7 @@
         self.addBuilding = function () {
             $('#addBuilding').modal('hide');
             buildingsViewModel.add({
-                name: self.buildingName
+                name: self.buildingName()
 
             });
             self.buildingName();

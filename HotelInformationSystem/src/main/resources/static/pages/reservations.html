@@ -1,10 +1,10 @@
-<div id="organizations" class="container">
+<div id="reservations" class="container">
     <table class="table table-striped">
         <tr>
-            <td><b>Organization name</b></td>
+            <td><b>Hotel name</b></td>
             <td><b>Options</b></td>
         </tr>
-        <!-- ko foreach: organizations -->
+        <!-- ko foreach: reservations -->
         <tr>
             <td><b data-bind="text: name"></b></td>
             <td>
@@ -14,7 +14,7 @@
         </tr>
         <!-- /ko -->
     </table>
-    <button data-bind="click: beginAdd" class="btn">Add Organization</button>
+    <button data-bind="click: beginAdd" class="btn">Add Reservation</button>
 
     <div class="w3-center">
         <div id="pagination" class="w3-bar">
@@ -30,44 +30,35 @@
     </div>
 </div>
 
-<div id="addOrganization" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+<div id="addReservation" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
      aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="addDialogLabel">Add Organization</h3>
+        <h3 id="addDialogLabel">Add Reservation</h3>
     </div>
     <div class="modal-body">
 
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="inputOrganization">Organization</label>
+                <label class="control-label" for="inputReservation">Reservation</label>
                 <div class="controls">
-                    <input data-bind="value: organizationName" type="text" id="inputOrganization"
-                           placeholder="Organization name"
-                           style="width: 150px;">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="inputDiscount">Discount</label>
-                <div class="controls">
-                    <input data-bind="value: discount" type="text" id="inputDiscount" placeholder="Discount"
+                    <input data-bind="value: reservationName" type="text" id="inputReservation" placeholder="Reservation name"
                            style="width: 150px;">
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <button data-bind="click: addOrganization" class="btn btn-primary">Add Organization</button>
+        <button data-bind="click: addReservation" class="btn btn-primary">Add Reservation</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
 
 <script>
-    function OrganizationsViewModel() {
+    function ReservationsViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
-        self.organizations = ko.observableArray();
+        self.reservations = ko.observableArray();
         self.pagination = ko.observableArray();
 
         self.ajax = function (uri, method, data) {
@@ -84,28 +75,25 @@
         }
 
         self.beginAdd = function () {
-            $('#addOrganization').modal('show');
+            $('#addReservation').modal('show');
         }
 
-        self.beginDetails = function (organization) {
-            var href = '#/organization/' + organization.organizationId();
+        self.beginDetails = function (reservation) {
+            var href = '#/reservation/' + reservation.reservationId();
             window.location = href
         }
 
-        self.add = function (organization) {
-            console.log("name is " + organization);
-            self.ajax(self.URI + 'organizations/', 'POST', organization).done(function (data) {
-                $('#addOrganization').modal('hide');
-            }).error(function (xhr, thrownError) {
-                alert(JSON.parse(xhr.responseText).message);
+        self.add = function (reservation) {
+            self.ajax(self.URI + 'reservations/', 'POST', reservation).done(function (data) {
+                window.location.reload();
             });
         }
 
-        self.remove = function (organization) {
-            self.ajax(self.URI + 'organizations/id/' + organization.organizationId(), 'DELETE'
+        self.remove = function (reservation) {
+            self.ajax(self.URI + 'reservations/id/' + reservation.reservationId(), 'DELETE'
             ).done(function (data) {
                 if (data < localStorage.getItem("page")) {
-                    var href = '#/organizations/' + Number(data);
+                    var href = '#/reservations/' + Number(data);
                     window.location = href;
                 } else {
                     window.location.reload();
@@ -115,12 +103,12 @@
         }
 
         self.showPage = function (page) {
-            var href = '#/organizations/' + page.pageNum();
+            var href = '#/reservations/' + page.pageNum();
             window.location = href;
         }
 
 
-        self.ajax(self.URI + 'organizations/page', 'GET').done(function (data) {
+        self.ajax(self.URI + 'reservations/page', 'GET').done(function (data) {
             for (var i = 1; i <= data; i++) {
                 self.pagination.push({
                     pageNum: ko.observable(i),
@@ -129,17 +117,17 @@
             }
         })
 
-        self.ajax(self.URI + 'organizations/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+        self.ajax(self.URI + 'reservations/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
             for (var i = 0; i < data.length; i++) {
-                self.organizations.push({
+                self.reservations.push({
                     name: ko.observable(data[i].name),
-                    organizationId: ko.observable(data[i].pk)
+                    reservationId: ko.observable(data[i].pk)
                 });
             }
         });
     }
 
-    function AddOrganizationViewModel() {
+    function AddReservationViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
         self.ajax = function (uri, method, data) {
@@ -155,22 +143,20 @@
             return $.ajax(request);
         }
 
-        self.organizationName = ko.observable();
-        self.discount = ko.observable();
+        self.reservationName = ko.observable();
 
-        self.addOrganization = function () {
-            console.log("add name is " + name);
-            organizationsViewModel.add({
-                name: self.organizationName(),
-                discount: self.discount()
+        self.addReservation = function () {
+            $('#addReservation').modal('hide');
+            reservationsViewModel.add({
+                name: self.reservationName
+
             });
-            self.organizationName();
-            self.discount();
+            self.reservationName();
         }
     }
 
-    var organizationsViewModel = new OrganizationsViewModel();
-    var addOrganizationViewModel = new AddOrganizationViewModel();
-    ko.applyBindings(organizationsViewModel, $('#organizations')[0]);
-    ko.applyBindings(addOrganizationViewModel, $('#addOrganization')[0]);
+    var reservationsViewModel = new ReservationsViewModel();
+    var addReservationViewModel = new AddReservationViewModel();
+    ko.applyBindings(reservationsViewModel, $('#reservations')[0]);
+    ko.applyBindings(addReservationViewModel, $('#addReservation')[0]);
 </script>

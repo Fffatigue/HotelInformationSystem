@@ -59,4 +59,9 @@ public class ReservationController {
     public List<Reservation> getReservations(@PathVariable int page) throws PersistException {
         return reservationService.getAll(page);
     }
+
+    @GetMapping("/page")
+    public int getPageNum() throws SQLException {
+        return reservationService.getPageNum();
+    }
 }
