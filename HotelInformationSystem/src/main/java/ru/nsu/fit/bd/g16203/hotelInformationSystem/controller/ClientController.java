@@ -50,4 +50,14 @@ public class ClientController {
     public List<Client> getReport(@RequestParam int price, @RequestParam int capacity, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
         return clientService.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
     }
+
+    @GetMapping("/report/12")
+    public List<Client> getMostFrequentClient() throws PersistException, SQLException {
+        return clientService.getMostFrequentClient();
+    }
+
+    @GetMapping("/report/13")
+    public List<Client> getNewClients(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
+        return clientService.getNewClients(beginDate, endDate);
+    }
 }

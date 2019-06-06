@@ -51,4 +51,14 @@ public class ClientService implements IClientService {
     public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
         return clientDao.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
     }
+
+    @Override
+    public List<Client> getMostFrequentClient() throws SQLException {
+        return clientDao.getMostFrequentClient();
+    }
+
+    @Override
+    public List<Client> getNewClients(LocalDate beginDate, LocalDate endDate) throws SQLException {
+        return clientDao.getNewClients(beginDate, endDate);
+    }
 }

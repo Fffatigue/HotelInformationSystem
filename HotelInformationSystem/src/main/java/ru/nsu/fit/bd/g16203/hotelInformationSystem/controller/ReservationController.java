@@ -48,9 +48,8 @@ public class ReservationController {
         return reservationService.getAvailableServices( reservationId );
     }
 
-    @PostMapping("/id/{reservationId}")
-    public Reservation createReservation(@PathVariable int reservationId, @RequestBody Reservation reservation) throws PersistException, SQLException, WrongDataException {
-        reservation.setPK( reservationId );
+    @PostMapping
+    public Reservation createReservation(@RequestBody Reservation reservation) throws PersistException, SQLException, WrongDataException {
         reservationService.create( reservation );
         return reservation;
     }

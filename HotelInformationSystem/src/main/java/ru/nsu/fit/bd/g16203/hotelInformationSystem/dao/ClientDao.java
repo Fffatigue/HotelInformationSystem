@@ -110,4 +110,40 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
             }
         }
     }
+
+    @Override
+    public List<Client> getMostFrequentClient() throws SQLException {
+        String sql = "select full_name, r.client_id, count(full_name) as value_occurrence\n" +
+                    "from reservation r\n" +
+                    "join individual e on e.client_id = r.client_id\n" +
+                    "group by full_name, r.client_id\n" +
+                    "order by value_occurrence DESC";
+
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                return parseResultSet( statement.executeQuery() );
+            }
+        }
+    }
+
+    @Override
+    public List<Client> getNewClients(LocalDate beginDate, LocalDate endDate) throws SQLException {
+        String sql = "SELECT client_id FROM client\n" +
+                "    EXCEPT(\n" +
+                "        SELECT c.client_id FROM client c\n" +
+                "        JOIN reservation re\n" +
+                "        ON(\n" +
+                "            c.client_id = re.client_id            \n" +
+                "        )\n" +
+                "        WHERE arrival_date<=? AND departure_date>=?\n" +
+                "    )";
+
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setDate( 1, java.sql.Date.valueOf( beginDate.toString() ) );
+                statement.setDate( 2, java.sql.Date.valueOf( endDate.toString() ) );
+                return parseResultSet( statement.executeQuery() );
+            }
+        }
+    }
 }

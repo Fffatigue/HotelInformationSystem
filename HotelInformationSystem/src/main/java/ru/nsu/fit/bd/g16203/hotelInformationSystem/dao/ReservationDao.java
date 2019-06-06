@@ -4,10 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     @Override
     public String getCreateQuery() {
         return "INSERT INTO reservation (reservation_id, client_id, arrival_date, departure_date, room_num, building_id, floor_num) \n" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?);";
+                "VALUES (DEFAULT, ?, ?, ?, ?, ?, ?);";
     }
 
     @Override
@@ -49,8 +46,8 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
     @Override
     protected void prepareStatementForUpdate(PreparedStatement statement, Reservation obj) throws SQLException {
         statement.setInt( 1, obj.getClientId() );
-        statement.setDate( 2, obj.getArrivalDate() );
-        statement.setDate( 3, obj.getDepartureDate() );
+        statement.setDate( 2, Date.valueOf(obj.getArrivalDate()) );
+        statement.setDate( 3, Date.valueOf(obj.getDepartureDate()) );
         statement.setInt( 4, obj.getRoomId().getRoomNum() );
         statement.setInt( 5, obj.getRoomId().getFloorId().getBuildingId() );
         statement.setInt( 6, obj.getRoomId().getFloorId().getFloorNum() );
@@ -59,13 +56,12 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Reservation obj) throws SQLException {
-        statement.setInt( 1, obj.getPK() );
-        statement.setInt( 2, obj.getClientId() );
-        statement.setDate( 3, obj.getArrivalDate() );
-        statement.setDate( 4, obj.getDepartureDate() );
-        statement.setInt( 5, obj.getRoomId().getRoomNum() );
-        statement.setInt( 6, obj.getRoomId().getFloorId().getBuildingId() );
-        statement.setInt( 7, obj.getRoomId().getFloorId().getFloorNum() );
+        statement.setInt( 1, obj.getClientId() );
+        statement.setDate( 2, Date.valueOf(obj.getArrivalDate()) );
+        statement.setDate( 3, Date.valueOf(obj.getDepartureDate()) );
+        statement.setInt( 4, obj.getRoomId().getRoomNum() );
+        statement.setInt( 5, obj.getRoomId().getFloorId().getBuildingId() );
+        statement.setInt( 6, obj.getRoomId().getFloorId().getFloorNum() );
     }
 
     @Override
@@ -75,12 +71,12 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     protected void checkDataCreate(Reservation obj) throws SQLException, WrongDataException {
-        String sql = "SELECT * FROM entity WHERE arrival_date<=? and ?<=departure_date and building_id = ? and floor_num = ?" +
+        String sql = "SELECT * FROM reservation WHERE arrival_date<=? and ?<=departure_date and building_id = ? and floor_num = ?" +
                 "and room_num = ?;";
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
-                statement.setDate( 1, obj.getDepartureDate() );
-                statement.setDate( 2, obj.getArrivalDate() );
+                statement.setDate( 1, Date.valueOf(obj.getDepartureDate()) );
+                statement.setDate( 2, Date.valueOf(obj.getArrivalDate()) );
                 statement.setInt( 3, obj.getRoomId().getFloorId().getBuildingId() );
                 statement.setInt( 4, obj.getRoomId().getFloorId().getFloorNum() );
                 statement.setInt( 5, obj.getRoomId().getRoomNum() );
@@ -93,12 +89,12 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
 
     @Override
     protected void checkDataUpdate(Reservation obj) throws SQLException, WrongDataException {
-        String sql = "SELECT * FROM entity WHERE arrival_date<=? and ?<=departure_date and building_id = ? and floor_num = ?" +
+        String sql = "SELECT * FROM reservation WHERE arrival_date<=? and ?<=departure_date and building_id = ? and floor_num = ?" +
                 "and room_num = ?;";
         try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
             try (PreparedStatement statement = c.prepareStatement( sql )) {
-                statement.setDate( 1, obj.getDepartureDate() );
-                statement.setDate( 2, obj.getArrivalDate() );
+                statement.setDate( 1, Date.valueOf(obj.getDepartureDate()) );
+                statement.setDate( 2, Date.valueOf(obj.getArrivalDate()) );
                 statement.setInt( 3, obj.getRoomId().getFloorId().getBuildingId() );
                 statement.setInt( 4, obj.getRoomId().getFloorId().getFloorNum() );
                 statement.setInt( 5, obj.getRoomId().getRoomNum() );
@@ -161,8 +157,8 @@ public class ReservationDao extends AbstractJDBCDao<Reservation, Integer> implem
             roomId.setFloorId( floorId );
 
             reservation.setPK( rs.getInt( "reservation_id" ) );
-            reservation.setArrivalDate( rs.getDate( "arrival_date" ) );
-            reservation.setDepartureDate( rs.getDate( "departure_date" ) );
+            reservation.setArrivalDate( rs.getDate( "arrival_date" ).toLocalDate() );
+            reservation.setDepartureDate( rs.getDate( "departure_date" ).toLocalDate() );
             reservation.setClientId( rs.getInt( "client_id" ) );
             reservation.setRoomId( roomId );
 

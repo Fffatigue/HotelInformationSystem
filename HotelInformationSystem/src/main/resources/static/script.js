@@ -89,11 +89,6 @@ app.controller('organizationsController', function ($scope, $routeParams) {
     localStorage.setItem("page", $routeParams.pageNum);
 });
 
-app.controller('reservationsController', function ($scope, $routeParams) {
-    localStorage.setItem("page", $routeParams.pageNum);
-});
-
-
 app.controller('roomController', function ($scope, $routeParams) {
     $scope.buildingId = $routeParams.buildingId;
     localStorage.setItem("buildingId", $routeParams.buildingId);

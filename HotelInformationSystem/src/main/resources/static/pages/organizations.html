@@ -89,13 +89,15 @@
 
         self.beginDetails = function (organization) {
             var href = '#/organization/' + organization.organizationId();
-            window.location = href
-        }
+            window.location = href;
+            window.location.reload();
+        };
 
         self.add = function (organization) {
             console.log("name is " + organization);
             self.ajax(self.URI + 'organizations/', 'POST', organization).done(function (data) {
                 $('#addOrganization').modal('hide');
+                window.location.reload();
             }).error(function (xhr, thrownError) {
                 alert(JSON.parse(xhr.responseText).message);
             });
@@ -112,11 +114,13 @@
                 }
 
             });
+            window.location.reload();
         }
 
         self.showPage = function (page) {
             var href = '#/organizations/' + page.pageNum();
             window.location = href;
+            window.location.reload();
         }
 
 

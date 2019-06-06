@@ -1,25 +1,29 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.model;
 
+import org.apache.tomcat.jni.Local;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Reservation implements Entity<Integer> {
     private Integer reservationId;
     private RoomId roomId;
     private Integer clientId;
-    private Date arrivalDate;
-    private Date departureDate;
+    private @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalDate;
+    private @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate;
 
     public Reservation() {
     }
 
-    public Reservation(RoomId roomId, Integer clientId, Date arrivalDate, Date departureDate) {
+    public Reservation(RoomId roomId, Integer clientId, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate) {
         this.roomId = roomId;
         this.clientId = clientId;
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
     }
 
-    public Reservation(Integer reservationId, RoomId roomId, Integer clientId, Date arrivalDate, Date departureDate) {
+    public Reservation(Integer reservationId, RoomId roomId, Integer clientId, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate) {
         this.reservationId = reservationId;
         this.roomId = roomId;
         this.clientId = clientId;
@@ -43,19 +47,19 @@ public class Reservation implements Entity<Integer> {
         this.clientId = clientId;
     }
 
-    public Date getArrivalDate() {
+    public @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate getArrivalDate() {
         return arrivalDate;
     }
 
-    public void setArrivalDate(Date arrivalDate) {
+    public void setArrivalDate(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalDate) {
         this.arrivalDate = arrivalDate;
     }
 
-    public Date getDepartureDate() {
+    public @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 
