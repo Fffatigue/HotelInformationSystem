@@ -60,4 +60,9 @@ public class ClientController {
     public List<Client> getNewClients(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
         return clientService.getNewClients(beginDate, endDate);
     }
+
+    @GetMapping("/report/14")
+    public List<Client> getClientInfo(@RequestParam Integer clientId) throws PersistException, SQLException {
+        return clientService.getClientInfo(clientId);
+    }
 }

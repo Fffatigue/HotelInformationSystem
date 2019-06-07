@@ -5,6 +5,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IRoomDao extends GenericDao<Room, RoomId> {
@@ -19,4 +20,6 @@ public interface IRoomDao extends GenericDao<Room, RoomId> {
     public List<Room> getAll(int page, String sortBy, boolean sortAsc) throws PersistException, WrongDataException;
 
     public RoomDao.RoomInfo getRoomInfo(RoomId roomId) throws PersistException;
+
+    RoomDao.RoomInfo getRoomDetailedInfo(RoomId roomId, LocalDate beginDate, LocalDate endDate) throws PersistException;
 }

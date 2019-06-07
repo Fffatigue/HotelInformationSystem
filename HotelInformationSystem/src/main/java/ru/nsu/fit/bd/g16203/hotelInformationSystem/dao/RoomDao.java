@@ -211,6 +211,44 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
         }
     }
 
+    @Override
+    public RoomInfo getRoomDetailedInfo(RoomId roomId, LocalDate beginDate, LocalDate endDate) throws PersistException {
+        String sql = "select r.building_id, r.floor_num, r.room_num, cl.full_name, arrival_date, departure_date from room r\n" +
+                "                left outer join reservation re\n" +
+                "                on(\n" +
+                "                            r.room_num = re.room_num and\n" +
+                "                            r.floor_num = re.floor_num and\n" +
+                "                            r.building_id = re.building_id\n" +
+                "                )\n" +
+                    "left join individual cl\n" +
+                "on\n" +
+                "(\n" +
+                "cl.client_id = re.client_id\n" +
+                ")\n" +
+                "where arrival_date<= ? and departure_date>= ?\n" +
+                "and r.building_id = ? and r.floor_num = ? and r.room_num = ?";
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setDate( 1, Date.valueOf(beginDate));
+                statement.setDate( 2, Date.valueOf(endDate));
+                statement.setInt( 3, roomId.getFloorId().getBuildingId());
+                statement.setInt( 4, roomId.getFloorId().getFloorNum());
+                statement.setInt( 5, roomId.getRoomNum());
+                ResultSet rs = statement.executeQuery();
+                List<RoomInfo> list = parseRoomInfoSet( rs );
+                if (list == null || list.isEmpty()) {
+                    return null;
+                }
+                if (list.size() > 1) {
+                    throw new PersistException( "Received more than one record." );
+                }
+                return list.iterator().next();
+            }
+        } catch (Exception e) {
+            throw new PersistException( e );
+        }
+    }
+
     private List<RoomInfo> parseRoomInfoSet(ResultSet rs) throws SQLException {
         List<RoomInfo> roomInfos = new ArrayList<>();
         while (rs.next()) {

@@ -146,4 +146,23 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
             }
         }
     }
+
+    @Override
+    public List<Client> getClientInfo(Integer clientId) throws SQLException {
+        String sql = "select distinct cl.full_name, count(cl.full_name) from (\n" +
+                "        select * from reservation r\n" +
+                "        join individual i on i.client_id = r.client_id\n" +
+                "\t\twhere i.client_id = ?\n" +
+                ") as cl\n" +
+                "group by cl.full_name \n" +
+                "having count(full_name)>=1\n" +
+                "order by full_name;";
+
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt( 1, clientId);
+                return parseResultSet( statement.executeQuery() );
+            }
+        }
+    }
 }

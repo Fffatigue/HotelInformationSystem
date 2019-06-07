@@ -61,4 +61,9 @@ public class ClientService implements IClientService {
     public List<Client> getNewClients(LocalDate beginDate, LocalDate endDate) throws SQLException {
         return clientDao.getNewClients(beginDate, endDate);
     }
+
+    @Override
+    public List<Client> getClientInfo(Integer clientId) throws SQLException {
+        return clientDao.getClientInfo(clientId);
+    }
 }

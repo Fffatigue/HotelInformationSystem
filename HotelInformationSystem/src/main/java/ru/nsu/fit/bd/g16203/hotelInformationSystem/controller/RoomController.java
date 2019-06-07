@@ -1,6 +1,7 @@
 package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
@@ -13,6 +14,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IRoomService;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -71,8 +73,18 @@ public class RoomController {
     }
 
     @RequestMapping("/report/3")
-    public RoomDao.RoomInfo getReport2(@RequestParam int roomNum, @RequestParam int floorNum, @RequestParam int buildingId) throws SQLException, PersistException {
+    public RoomDao.RoomInfo getReport3(@RequestParam int roomNum, @RequestParam int floorNum, @RequestParam int buildingId) throws SQLException, PersistException {
         FloorId floorId = new FloorId( buildingId, floorNum );
         return roomService.getRoomInfo( new RoomId( floorId, roomNum ) );
+    }
+
+    @RequestMapping("/report/15")
+    public RoomDao.RoomInfo getReport15(@RequestParam int roomNum,
+                                        @RequestParam int floorNum,
+                                        @RequestParam int buildingId,
+                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate,
+                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws SQLException, PersistException {
+        FloorId floorId = new FloorId( buildingId, floorNum );
+        return roomService.getRoomDetailedInfo( new RoomId( floorId, roomNum ), beginDate, endDate);
     }
 }
