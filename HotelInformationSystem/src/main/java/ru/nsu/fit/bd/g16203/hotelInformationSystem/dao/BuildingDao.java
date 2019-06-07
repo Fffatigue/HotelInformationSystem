@@ -22,7 +22,7 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
     @Override
     public String getCreateQuery() {
         return "INSERT INTO building (name) \n" +
-                "VALUES (?);";
+                "VALUES (?) returning building_id;";
     }
 
     @Override
@@ -135,6 +135,22 @@ public class BuildingDao extends AbstractJDBCDao<Building, Integer> implements I
                 statement.setInt( 1, buildingId );
                 return parseServiceResultSet( statement.executeQuery() );
             }
+        }
+    }
+
+    @Override
+    public void create(Building object) throws PersistException, WrongDataException, SQLException {
+        checkForCreate( object );
+        String sql = getCreateQuery();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                prepareStatementForInsert( statement, object );
+                ResultSet rs = statement.executeQuery();
+                rs.next();
+                object.setPK(rs.getInt("building_id"));
+            }
+        } catch (Exception e) {
+            throw new PersistException( e );
         }
     }
 

@@ -1,0 +1,79 @@
+<div id=reportClient1 class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputRoom"><p style="font-size: 30px"><b>Room : </b>
+            <input data-bind="value: room" type="text" id="inputRoom" placeholder="Room"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputFloor"><p style="font-size: 30px"><b>Floor : </b>
+            <input data-bind="value: floor" type="text" id="inputFloor" placeholder="Floor"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputBuilding"><p style="font-size: 30px"><b>Building : </b>
+            <input data-bind="value: building" type="text" id="inputBuilding" placeholder="Building"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: ok" class="btn btn-primary">Ok</button>
+    </dl>
+
+    <p style="font-size: 30px"><b>Extra price : </b><span data-bind="text: price"></span></p>
+
+    <!-- ko foreach: services -->
+    <tr>
+        <td><b data-bind="text: serviceName"></b></td>
+        <td><b data-bind="text: pricee"></b></td>
+    </tr>
+    <!-- /ko -->
+
+    <!-- ko foreach: comments -->
+    <tr>
+        <td><b data-bind="text: comment"></b></td>
+    </tr>
+    <!-- /ko -->
+
+</div>
+
+<script>
+
+    function ReportClient1ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/rooms/my_report/3';
+        self.services = ko.observableArray();
+        self.comments = ko.observableArray();
+        self.room = ko.observable();
+        self.floor = ko.observable();
+        self.building = ko.observable();
+        self.price = ko.observable();
+
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.ok = function () {
+            self.ajax(self.URI + '?roomNum=' + self.room() + '&floorNum=' + self.floor() + '&buildingId=' + self.building(), 'GET').done(function (data) {
+                self.price(data.extraPrice);
+                for (var i = 0; i < data.services.length; i++) {
+                    self.services.push({
+                        serviceName: ko.observable(data.services[i].name),
+                        pricee: ko.observable(data.services[i].price)
+                    });
+                }
+                for (var i = 0; i < data.complains.length; i++) {
+                    console.log(data.complains[i]);
+                    self.comments.push({
+                        comment: ko.observable(data.complains[i])
+                    });
+                }
+            })
+        }
+
+    }
+
+    var reportClient1ViewModel = new ReportClient1ViewModel();
+    ko.applyBindings(reportClient1ViewModel, $('#reportClient1')[0]);
+</script>

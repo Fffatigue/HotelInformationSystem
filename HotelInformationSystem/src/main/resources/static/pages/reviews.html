@@ -1,0 +1,327 @@
+<div id="reviews" class="container">
+    <input data-bind="value: search" type="text" placeholder="Search"
+           style="width: 150px;">
+    <input data-bind="value: searchScore" type="number" placeholder="SearchScore"
+           style="width: 150px;">
+    <!--тут мы задаем таблицу с комнатами-->
+    <table class="table table-striped">
+        <!--первый столбик - название полей, дата бинд нужен для сортировки, айди тоже-->
+        <tr data-bind="click: sortFunction">
+            <td id="score"><b>Score</b></td>
+            <td id="comment"><b>Comment</b></td>
+            <td id="options"><b>Options</b></td>
+        </tr>
+        <!--остальные столбики foreach проходит по массиву rooms, и мы перечисляем названия полей, которые нужно вывести или методы, которые нужно использовать-->
+        <!-- ko foreach: reviews -->
+        <tr>
+            <td><b data-bind="text: score"></b></td>
+            <td><b data-bind="text: comment"></b></td>
+            <td>
+            <button data-bind="click: $parent.beginDetails" class="btn">Details</button>
+            <button data-bind="click: $parent.remove" class="btn">Delete</button>
+            </td>
+            </td>
+        </tr>
+        <!-- /ko -->
+    </table>
+    <!--кнопка добавления комнаты-->
+    <button data-bind="click: beginAdd" class="btn">Add Comment</button>
+
+    <!--ну это кнопочки со страницами тоже foreach по массиву с номерами страниц-->
+    <div class="w3-center">
+        <div id="pagination" class="w3-bar">
+            <!-- ko foreach: pagination -->
+            <span data-bind="visible : isCurrentPage"><button data-bind="click: $parent.showPage"
+                                                              class="w3-button w3-blue"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <span data-bind="visible : !isCurrentPage()"><button data-bind="click: $parent.showPage"
+                                                                 class="w3-button"><span
+                    data-bind="text: pageNum"></span></button></span>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+
+<!--это окно которое по умолчанию невидимое с добавлением комнаты-->
+<div id="addReview" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addDialogLabel">Add Room</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputReservation">Reservation</label>
+                <div class="controls">
+                    <input data-bind="value: reservation" type="text" id="inputReservation" placeholder="Reservation"
+                           style="width: 150px;">
+                </div>
+            </div>
+
+            <!--это вывести список зданий, опшионс - массив зданий, опшионстекс - поле объекта массива, которое должно показываться, вэлью - выбранный объект, опшионс капшион - то что показывается когда никто не выбран-->
+            <div class="control-group">
+                <label class="control-label" for="inputScore">Score</label>
+                <div class="controls">
+                    <input data-bind="value: score" type="text" id="inputScore" placeholder="Score"
+                           style="width: 150px;">
+                </div>
+            </div>
+
+            <!--поле ввода для номера комнаты - плейсхолдер это то что показывается пока значение не введено,
+            айди это чтобы лейбл рядом поставить, вэлью - переменная куда значение сохранится-->
+            <div class="control-group">
+                <label class="control-label" for="inputComment">Comment</label>
+                <div class="controls">
+                    <input data-bind="value: comment" type="text" id="inputComment" placeholder="Comment"
+                           style="width: 150px;">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!--тут кнопки аддрум которая вызывает метод addRoom и кансел, которая скрывает окно просто, но введенные данные не удаляются, а остаются в этом окне-->
+    <div class="modal-footer">
+        <button data-bind="click: addReview" class="btn btn-primary">Add Review</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<script>
+    /*в скрипте 2 модели используются. Одна для таблицы, вторая для всплывающего окна*/
+    function ReviewsViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+
+        /*сортировка*/
+        self.sortBy = 'score';
+        self.sortAsc = true;
+
+        this.sortFunction = function () {
+            if (event.target.id === '' || event.target.id === 'options') {
+                return
+            }
+            if (self.sortBy === event.target.id)
+                self.sortAsc = !self.sortAsc;
+            else {
+                self.sortBy = event.target.id;
+                self.sortAsc = true;
+            }
+
+            self.init();
+        }
+
+        /*инициализация массивов*/
+        self.reviews = ko.observableArray();
+        self.pagination = ko.observableArray();
+
+        self.search = ko.observable();
+        self.search.subscribe(function () {
+            self.init();
+        })
+
+        self.searchScore = ko.observable();
+        self.searchScore.subscribe(function () {
+            self.init();
+        })
+
+        /*задаем метод для работы с рест под названием ajax*/
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        /*задаем метод beginAdd для кнопки адд, который делает окно добавление комнаты видимым*/
+        self.beginAdd = function () {
+            $('#addReview').modal('show');
+        }
+
+        /*задаем метод beginDetails для кнопки детэйлс, которая связана с комнатой, которая делает редирект на страницу
+         выбранной комнаты*/
+        self.beginDetails = function (review) {
+            var href = '#/review/' + review.reviewId();
+            window.location = href
+        }
+
+        /*задаем метод адд, который отправляет рест запрос на добавление, при удачном добавлении обновляем страницу*/
+        self.add = function (review) {
+            self.ajax(self.URI + 'reviews/id/', 'POST', review).done(function (data) {
+                $('#addReview').modal('hide');
+                self.init();
+            }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        /*задаем метод удаления комнаты, после удачного удаления смотрим новое количество страниц и то на какой мы странице,
+         если нужно переходим на другую страницу, иначе перезагружаем эту*/
+        self.remove = function (review) {
+            self.ajax(self.URI + 'reviews/id/' + review.reviewId(), 'DELETE'
+            ).done(function (data) {
+                if (data < localStorage.getItem("page")) {
+                    localStorage.setItem("page", data);
+                }
+                self.init();
+            });
+        }
+
+        /*переход на другую страницу*/
+        self.showPage = function (page) {
+            console.log(page.pageNum());
+            localStorage.setItem("page", page.pageNum());
+            self.init();
+        }
+
+
+        self.init = function () {
+            self.reviews([]);
+            self.pagination([]);
+
+            if (self.search() === '' || self.search() === undefined || self.searchScore === '' || self.searchScore === undefined) {
+                /*инициализация массива страниц*/
+                self.ajax(self.URI + 'reviews/page', 'GET').done(function (data) {
+                    for (var i = 1; i <= data; i++) {
+                        self.pagination.push({
+                            pageNum: ko.observable(i),
+                            isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
+                        })
+                    }
+                })
+
+
+                /*инициализация массива комнат*/
+                console.log('reviews/page/' + localStorage.getItem("page") + '?' + 'sortBy=' +
+                    self.sortBy + '&sortAsc=' + self.sortAsc);
+                self.ajax(self.URI + 'reviews/page/' + localStorage.getItem("page") + '?' + 'sortBy=' +
+                    self.sortBy + '&sortAsc=' + self.sortAsc, 'GET'
+                ).done(function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        self.reviews.push({
+                            reviewId: ko.observable(data[i].pk),
+                            score: ko.observable(data[i].score),
+                            comment: ko.observable(data[i].comment),
+                            reservationId: ko.observable(data[i].reservationId)
+                        });
+                    }
+                });
+            } else {
+                /*инициализация массива комнат*/
+                if ((self.search === '' || self.search === undefined) && (self.searchScore === '' || self.searchScore === undefined)) {
+                    console.log(self.URI + 'reviews/comment/lol/score/0' + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc);
+                    console.log(1);
+                    self.ajax(self.URI + 'reviews/comment/lol/score/0' + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            self.reviews.push({
+                                reviewId: ko.observable(data[i].pk),
+                                score: ko.observable(data[i].score),
+                                comment: ko.observable(data[i].comment),
+                                reservationId: ko.observable(data[i].reservationId)
+                            });
+                        }
+                    });
+                } else if (self.search === '' || self.search === undefined){
+                    console.log(self.URI + 'reviews/comment/lol/score/' + self.searchScore() + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc);
+                    console.log(2);
+                    self.ajax(self.URI + 'reviews/comment/lol/score/' + self.searchScore() + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            self.reviews.push({
+                                reviewId: ko.observable(data[i].pk),
+                                score: ko.observable(data[i].score),
+                                comment: ko.observable(data[i].comment),
+                                reservationId: ko.observable(data[i].reservationId)
+                            });
+                        }
+                    });
+                } else if (self.searchScore === '' || self.searchScore() === undefined){
+                    console.log(self.URI + 'reviews/comment/' + self.search() + '/score/0' + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc);
+                    console.log(3);
+                    self.ajax(self.URI + 'reviews/comment/' + self.search() + '/score/0' + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            self.reviews.push({
+                                reviewId: ko.observable(data[i].pk),
+                                score: ko.observable(data[i].score),
+                                comment: ko.observable(data[i].comment),
+                                reservationId: ko.observable(data[i].reservationId)
+                            });
+                        }
+                    });
+                } else {
+                    console.log(4);
+                    console.log(self.URI + 'reviews/comment/' + self.search() + '/score/' + self.searchScore() + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc);
+                    self.ajax(self.URI + 'reviews/comment/' + self.search() + '/score/' + self.searchScore() + '?' + 'sortBy=' +
+                        self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            self.reviews.push({
+                                reviewId: ko.observable(data[i].pk),
+                                score: ko.observable(data[i].score),
+                                comment: ko.observable(data[i].comment),
+                                reservationId: ko.observable(data[i].reservationId)
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        self.init();
+    }
+
+    function AddReviewViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        /*инициализация переменных в которые будут поступать входные данные*/
+        self.score = ko.observable();
+        self.comment = ko.observable();
+        self.reservation = ko.observable();
+
+        /*метод аддрум вызывает метод адд у другой модели с целью отправки запроса на добавление комнат,
+         а потом чистит переменные, чтобы при следующем нажатии на кнопку адд не было старых значений*/
+        self.addReview = function () {
+            console.log(self.reservation());
+            reviewsViewModel.add({
+                score: self.score(),
+                comment: self.comment(),
+                reservationId: self.reservation()
+            });
+            self.reservation();
+            self.score();
+            self.comment();
+        }
+    }
+
+
+    /*здесь мы инициализируем используемые модели*/
+    var reviewsViewModel = new ReviewsViewModel();
+    var addReviewViewModel = new AddReviewViewModel();
+    ko.applyBindings(reviewsViewModel, $('#reviews')[0]);
+    ko.applyBindings(addReviewViewModel, $('#addReview')[0]);
+</script>

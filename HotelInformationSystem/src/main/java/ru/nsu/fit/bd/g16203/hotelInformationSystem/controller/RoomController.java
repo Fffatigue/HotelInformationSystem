@@ -12,6 +12,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.service.IRoomService;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -74,5 +75,26 @@ public class RoomController {
     public RoomDao.RoomInfo getReport2(@RequestParam int roomNum, @RequestParam int floorNum, @RequestParam int buildingId) throws SQLException, PersistException {
         FloorId floorId = new FloorId( buildingId, floorNum );
         return roomService.getRoomInfo( new RoomId( floorId, roomNum ) );
+    }
+
+    @RequestMapping("/my_report/1")
+    public List<Room> getFutureRooms(@RequestParam Date date) throws SQLException {
+        return roomService.getFutureFreeRooms(date);
+    }
+
+    @RequestMapping("/my_report/3")
+    public  RoomDao.CurClientInfo getCurClientInfo(@RequestParam int roomNum, @RequestParam int floorNum, @RequestParam int buildingId) throws PersistException, SQLException {
+        FloorId floorId = new FloorId(buildingId, floorNum);
+        return roomService.getCurClientInfo(new RoomId(floorId, roomNum));
+    }
+
+    @RequestMapping("/my_report/2")
+    public List<RoomDao.RoomProfitability> getRoomsProfitability() throws SQLException {
+        return roomService.getRoomsProfitability();
+    }
+
+    @GetMapping("/building/{buildingId}/floor/{floorNum}")
+    public List<Room> getRoomsByBuildingAndFloor(@PathVariable int buildingId, @PathVariable int floorNum) throws SQLException {
+        return roomService.getRoomsByBuildingAndFloor(buildingId, floorNum);
     }
 }

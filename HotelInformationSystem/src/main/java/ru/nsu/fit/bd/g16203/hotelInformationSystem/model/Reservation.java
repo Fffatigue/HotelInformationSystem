@@ -6,6 +6,7 @@ public class Reservation implements Entity<Integer> {
     private Integer reservationId;
     private RoomId roomId;
     private Integer clientId;
+    private String clientName;
     private Date arrivalDate;
     private Date departureDate;
 
@@ -57,6 +58,14 @@ public class Reservation implements Entity<Integer> {
 
     public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     @Override

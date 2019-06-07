@@ -22,8 +22,9 @@ public class ReviewController {
     }
 
     @DeleteMapping("/id/{reviewId}")
-    public void deleteReview(@PathVariable int reviewId) throws PersistException, WrongDataException {
+    public int deleteReview(@PathVariable int reviewId) throws PersistException, WrongDataException, SQLException {
         reviewService.delete(reviewId);
+        return  reviewService.getPageNum();
     }
 
     @PutMapping("/id/{reviewId}")
@@ -32,15 +33,25 @@ public class ReviewController {
         reviewService.update( review );
     }
 
-    @PostMapping("/id/{reviewId}")
-    public Review createReview(@PathVariable int reviewId, @RequestBody Review review) throws PersistException, SQLException, WrongDataException {
-        review.setPK( reviewId );
-        reviewService.create( review );
+    @PostMapping("/id")
+    public Review createReview(@RequestBody Review review) throws PersistException, SQLException, WrongDataException {
+        reviewService.create(review);
         return review;
     }
 
     @RequestMapping("page/{page}")
-    public List<Review> getReviews(@PathVariable int page) throws PersistException {
-        return reviewService.getAll(page);
+    public List<Review> getReviews(@RequestParam String sortBy, @RequestParam Boolean sortAsc, @PathVariable int page) throws SQLException {
+        return reviewService.getAllSort(sortBy, sortAsc, page);
     }
+
+    @RequestMapping("comment/{comment}/score/{score}")
+    public List<Review> getReviewsAll(@RequestParam String sortBy, @RequestParam Boolean sortAsc, @PathVariable String comment, @PathVariable Integer score) throws SQLException {
+        return reviewService.getAllFilter(sortBy, sortAsc, comment, score);
+    }
+
+    @RequestMapping("/page")
+    public int getPageNum() throws SQLException {
+        return reviewService.getPageNum();
+    }
+
 }

@@ -44,4 +44,13 @@ public class ReviewService implements IReviewService {
     public List<Review> getAll(int page) throws PersistException {
         return reviewDao.getAll(page);
     }
+
+    public List<Review> getAllSort(String sortBy, Boolean sortAsc, int page) throws SQLException {
+        return reviewDao.getAllSort(sortBy, sortAsc, page);
+    }
+
+    @Override
+    public List<Review> getAllFilter(String sortBy, Boolean sortAsc, String comment, Integer score) throws SQLException {
+        return reviewDao.getAllFilter(sortBy, sortAsc, comment, score);
+    }
 }

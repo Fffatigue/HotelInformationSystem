@@ -1,0 +1,101 @@
+<div id=room class="jumbotron text-center">
+    <dl>
+        <p style="font-size: 30px"><b>Building : </b><span data-bind="text: buildingName"></span></p>
+
+        <p style="font-size: 30px"><b>Floor : </b><span data-bind="text: floorNum"></span></p>
+
+        <p style="font-size: 30px"><b>Room : </b><span data-bind="text: roomNum"></span></p>
+
+        <p style="font-size: 30px"><b>Client : </b><span data-bind="text: clientName"></span></p>
+
+        <label class="control-label" for="inputArrival"><p style="font-size: 30px"><b>Arrival date : </b>
+            <input data-bind="value: arrival" type="text" id="inputArrival" placeholder="Arrival"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputDeparture"><p style="font-size: 30px"><b>Departure date : </b>
+            <input data-bind="value: departure" type="text" id="inputDeparture" placeholder="Departure"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px">
+        <p style="font-size: 30px">
+            <button data-bind="click: accept" class="btn btn-primary">Accept</button>
+            <button data-bind="click: deleteRoom" class="btn">Delete</button>
+            <button data-bind="click: cancel" class="btn">Cancel</button>
+        </p>
+    </dl>
+</div>
+
+<script>
+
+    function ReservationViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.buildingName = ko.observable();
+        self.floorNum = ko.observable();
+        self.roomNum = ko.observable();
+        self.clientName = ko.observable();
+        self.arrival = ko.observable();
+        self.departure = ko.observable();
+        self.clientId = ko.observable();;
+        self.buildingId = ko.observable();;
+
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+        self.ajax(self.URI + 'reservations/id/' + localStorage.getItem("reservationId"), 'GET').done(function (data) {
+            self.buildingName(data.roomId.floorId.buildingName);
+            self.buildingId(data.roomId.floorId.buildingId);
+            self.floorNum(data.roomId.floorId.floorNum);
+            self.roomNum(data.roomId.roomNum);
+            self.clientId(data.clientId);
+            self.clientName(data.clientName);
+            self.arrival(data.arrivalDate);
+            self.departure(data.departureDate);
+        })
+
+        self.accept = function () {
+            self.ajax(self.URI + 'reservations/id/' + localStorage.getItem("reservationId"), 'PUT', {
+                roomId : {
+                    floorId : {
+                        buildingId : self.buildingId(),
+                        buildingName : self.buildingName(),
+                        floorNum : self.floorNum()
+                    },
+                    roomNum : self.roomNum()
+                },
+                clientId: self.clientId(),
+                clientName: self.clientName(),
+                arrivalDate: self.arrival(),
+                departureDate: self.departure()
+            }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
+        self.deleteRoom = function () {
+            self.ajax(self.URI + 'reservations/id/' + localStorage.getItem("reservationId"), 'DELETE')
+                .done(function () {
+                    var href = '#/reservations/' + 1;
+                    window.location = href;
+                })
+                .error(function (xhr, thrownError) {
+                    alert(JSON.parse(xhr.responseText).message);
+                });
+        }
+
+        self.cancel = function () {
+            var href = '#/reservations/' + 1;
+            window.location = href;
+        }
+    }
+
+    var reservationViewModel = new ReservationViewModel();
+    ko.applyBindings(reservationViewModel, $('#reservation')[0]);
+</script>

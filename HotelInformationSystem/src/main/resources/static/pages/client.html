@@ -1,11 +1,11 @@
-<div id=building class="jumbotron text-center">
+<div id=client class="jumbotron text-center">
     <dl>
-        <label class="control-label" for="inputBuildingName"><p style="font-size: 30px"><b>Building : </b>
-            <input data-bind="value: buildingName" type="text" id="inputBuildingName" placeholder="Building name"
+        <label class="control-label" for="inputClientName"><p style="font-size: 30px"><b>Client : </b>
+            <input data-bind="value: clientName" type="text" id="inputClientName" placeholder="Client name"
                    style="width: 150px;height: 40px;font-size: 30px"></p></label>
         <p style="font-size: 30px">
             <button data-bind="click: accept" class="btn btn-primary">Accept</button>
-            <button data-bind="click: deleteBuilding" class="btn">Delete</button>
+            <button data-bind="click: deleteClient" class="btn">Delete</button>
             <button data-bind="click: cancel" class="btn">Cancel</button>
         </p>
     </dl>
@@ -13,10 +13,10 @@
 
 <script>
 
-    function BuildingViewModel() {
+    function ClientViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
-        self.buildingName = ko.observable();
+        self.clientName = ko.observable();
         self.ajax = function (uri, method, data) {
             var request = {
                 url: uri,
@@ -29,20 +29,20 @@
             };
             return $.ajax(request);
         }
-        self.ajax(self.URI + 'buildings/id/' + +localStorage.getItem('buildingId'), 'GET').done(function (data) {
-            self.buildingName(data.name);
+        self.ajax(self.URI + 'clients/id/' + +localStorage.getItem('clientId'), 'GET').done(function (data) {
+            self.clientName(data.name);
         })
 
         self.accept = function () {
-            self.ajax(self.URI + 'buildings/id/' + localStorage.getItem('buildingId'), 'PUT', {
-                name: self.buildingName()
+            self.ajax(self.URI + 'clients/id/' + localStorage.getItem('clientId'), 'PUT', {
+                name: self.clientName()
             });
         }
 
-        self.deleteBuilding = function () {
-            self.ajax(self.URI + 'buildings/id/' + localStorage.getItem('buildingId'), 'DELETE')
+        self.deleteClient = function () {
+            self.ajax(self.URI + 'clients/id/' + localStorage.getItem('clientId'), 'DELETE')
                 .done(function () {
-                    var href = '#/buildings/' + 1;
+                    var href = '#/clients/' + 1;
                     window.location = href;
                 })
                 .error(function (xhr, thrownError) {
@@ -51,11 +51,11 @@
         }
 
         self.cancel = function () {
-            var href = '#/buildings/' + 1;
+            var href = '#/clients/' + 1;
             window.location = href;
         }
     }
 
-    var buildingViewModel = new BuildingViewModel();
-    ko.applyBindings(buildingViewModel, $('#building')[0]);
+    var clientViewModel = new ClientViewModel();
+    ko.applyBindings(clientViewModel, $('#client')[0]);
 </script>

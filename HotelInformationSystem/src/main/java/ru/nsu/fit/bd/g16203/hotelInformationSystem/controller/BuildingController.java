@@ -23,8 +23,9 @@ public class BuildingController {
     }
 
     @DeleteMapping("/id/{buildingId}")
-    public void deleteRoom(@PathVariable int buildingId) throws PersistException, WrongDataException {
+    public Integer deleteRoom(@PathVariable int buildingId) throws PersistException, WrongDataException, SQLException {
         buildingService.delete( buildingId );
+        return buildingService.getPageNum();
     }
 
     @PutMapping("/id/{buildingId}")

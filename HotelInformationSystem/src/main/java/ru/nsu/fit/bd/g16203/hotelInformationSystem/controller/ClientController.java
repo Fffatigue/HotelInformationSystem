@@ -3,6 +3,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.ClientDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Client;
@@ -25,8 +26,9 @@ public class ClientController {
     }
 
     @DeleteMapping("/id/{clientId}")
-    public void deleteClient(@PathVariable int clientId) throws PersistException, WrongDataException {
+    public Integer deleteClient(@PathVariable int clientId) throws PersistException, WrongDataException, SQLException {
         clientService.delete( clientId );
+        return clientService.getPageNum();
     }
 
     @PutMapping("/id/{clientId}")
@@ -49,5 +51,15 @@ public class ClientController {
     @GetMapping("/report/1")
     public List<Client> getReport(@RequestParam int price, @RequestParam int capacity, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate beginDate, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws PersistException, SQLException {
         return clientService.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
+    }
+
+    @GetMapping("/my_report/1")
+    public List<ClientDao.ClientComment> getAngryComments() throws PersistException, SQLException {
+        return clientService.getAngryComments();
+    }
+
+    @GetMapping("/page")
+    public int getPageNum() throws SQLException {
+        return clientService.getPageNum();
     }
 }

@@ -110,4 +110,70 @@ public class ClientDao extends AbstractJDBCDao<Client, Integer> implements IClie
             }
         }
     }
+
+    @Override
+    public List<ClientDao.ClientComment> getAngryComments () throws PersistException, SQLException {
+        String sql = "select ind.full_name, en.name, cl.client_id, rv.comment from review rv\n" +
+                " join reservation rs on (rv.reservation_id = rs.reservation_id)\n" +
+                " join client cl on (rs.client_id = cl.client_id)\n" +
+                " left join individual ind on (rs.client_id = ind.client_id)\n" +
+                " left join entity en on (rs.client_id = en.client_id)\n" +
+                " where rv.score < 5";
+        List<ClientComment> clientComments = new ArrayList<>();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    int clientId = resultSet.getInt("client_id");
+                    String comment = resultSet.getString("comment");
+                    String name;
+                    if (resultSet.getString("name") == null){
+                        name = resultSet.getString("full_name");
+                    } else {
+                        name = resultSet.getString("name");
+                    }
+                    ClientComment clientComment = new ClientComment(clientId, comment, name);
+                    clientComments.add(clientComment);
+
+                }
+            }
+        }
+        return clientComments;
+    }
+
+    public class ClientComment{
+        int client_id;
+        String clientName;
+        String comment;
+
+        public ClientComment(int client_id, String comment, String clientName) {
+            this.client_id = client_id;
+            this.comment = comment;
+            this.clientName = clientName;
+        }
+
+        public int getClient_id() {
+            return client_id;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public String getClientName() {
+            return clientName;
+        }
+
+        public void setClient_id(int client_id) {
+            this.client_id = client_id;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
+        public void setClientName(String clientName) {
+            this.clientName = clientName;
+        }
+    }
 }

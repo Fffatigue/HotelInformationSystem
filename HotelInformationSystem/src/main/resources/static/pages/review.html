@@ -1,0 +1,74 @@
+<div id=room class="jumbotron text-center">
+    <dl>
+        <label class="control-label" for="inputScore"><p style="font-size: 30px"><b>Score : </b>
+            <input data-bind="value: score" type="text" id="inputScore" placeholder="Score"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <label class="control-label" for="inputComment"><p style="font-size: 30px"><b>Comment : </b>
+            <input data-bind="value: comment" type="text" id="inputComment" placeholder="Comment"
+                   style="width: 150px;height: 40px;font-size: 30px"></p></label>
+        <p style="font-size: 30px">
+        <p style="font-size: 30px">
+            <button data-bind="click: accept" class="btn btn-primary">Accept</button>
+            <button data-bind="click: deleteReview" class="btn">Delete</button>
+            <button data-bind="click: cancel" class="btn">Cancel</button>
+        </p>
+    </dl>
+</div>
+
+<script>
+
+    function ReviewViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/';
+        self.reviewId = ko.observable();
+        self.reservationId = ko.observable();
+        self.comment = ko.observable();
+        self.score = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+        self.ajax(self.URI + 'reviews/id/' + localStorage.getItem("reviewId"), 'GET').done(function (data) {
+            self.reviewId(data.pk);
+            self.reservationId(data.reservationId);
+            self.comment(data.comment);
+            self.score(data.score);
+        })
+
+        self.accept = function () {
+            self.ajax(self.URI + 'reviews/id/' + self.reviewId(), 'PUT', {
+                reviewId: self.reviewId(),
+                reservationId: self.reservationId(),
+                comment: self.comment(),
+                score: self.score()
+            });
+        }
+
+        self.deleteReview = function () {
+            self.ajax(self.URI + 'reviews/id/' + self.reviewId(), 'DELETE')
+                .done(function () {
+                    var href = '#/reviews/' + 1;
+                    window.location = href;
+                })
+                .error(function (xhr, thrownError) {
+                    alert(JSON.parse(xhr.responseText).message);
+                });
+        }
+
+        self.cancel = function () {
+            var href = '#/reviews/' + 1;
+            window.location = href;
+        }
+    }
+
+    var reviewViewModel = new ReviewViewModel();
+    ko.applyBindings(reviewViewModel, $('#review')[0]);
+</script>

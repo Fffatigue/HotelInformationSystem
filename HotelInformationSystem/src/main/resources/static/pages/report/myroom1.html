@@ -1,0 +1,56 @@
+<div id=reportClient1 class="jumbotron text-center">
+    <dl>
+        <p style="font-size: 30px"><b>Date format : yyyy-mm-dd</b></p>
+        <label class="control-label" for="inputFuture"><p style="font-size: 30px"><b>Future date : </b>
+            <input data-bind="value: future" type="text" id="inputFuture" placeholder="Future date"
+                   style="width: 300px;height: 40px;font-size: 30px"></p></label>
+        <button data-bind="click: ok" class="btn btn-primary">Ok</button>
+    </dl>
+    <!-- ko foreach: rooms -->
+    <table class="table table-striped">
+    <tr>
+        <td><b data-bind="text: buildingName"></b></td>
+        <td><p><b>Room number </b> <span data-bind="text: roomNum"></span></p>
+            <p><b>Floor number </b><span data-bind="text: floorNum"></span></p></td>
+    </tr>
+    </table>
+    <!-- /ko -->
+</div>
+
+<script>
+
+    function ReportClient1ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/rooms/my_report/1';
+        self.rooms = ko.observableArray();
+        self.future = ko.observable();
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.ok = function () {
+            self.ajax(self.URI + '?date=' + self.future(), 'GET').done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.rooms.push({
+                        buildingName: ko.observable(data[i].pk.floorId.buildingName),
+                        roomNum: ko.observable(data[i].pk.roomNum),
+                        floorNum: ko.observable(data[i].pk.floorId.floorNum)
+                    });
+                }
+            })
+        }
+
+    }
+
+    var reportClient1ViewModel = new ReportClient1ViewModel();
+    ko.applyBindings(reportClient1ViewModel, $('#reportClient1')[0]);
+</script>

@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IReservationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.ReservationDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Reservation;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -43,6 +45,11 @@ public class ReservationService implements IReservationService {
     @Override
     public List<Reservation> getAll(int page) throws PersistException {
         return reservationDao.getAll(page);
+    }
+
+    @Override
+    public ReservationDao.OrganizationReserves getNumRoomsReservedOrg(Integer organization_id, Date dateFrom, Date dateTo) throws SQLException{
+        return reservationDao.getNumRoomsReservedOrg(organization_id, dateFrom, dateTo);
     }
 
     @Override

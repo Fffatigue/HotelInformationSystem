@@ -10,6 +10,7 @@ import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
 
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -75,6 +76,26 @@ public class RoomService implements IRoomService {
     @Override
     public RoomDao.RoomInfo getRoomInfo(RoomId roomId) throws PersistException {
         return roomDao.getRoomInfo( roomId );
+    }
+
+    @Override
+    public List<Room> getFutureFreeRooms(Date date) throws SQLException{
+        return roomDao.getFutureFreeRooms(date);
+    }
+
+    @Override
+    public RoomDao.CurClientInfo getCurClientInfo(RoomId roomId) throws PersistException, SQLException {
+        return roomDao.getCurClientInfo(roomId);
+    }
+
+    @Override
+    public List<RoomDao.RoomProfitability> getRoomsProfitability() throws SQLException {
+        return roomDao.getRoomsProfitability();
+    }
+
+    @Override
+    public List<Room> getRoomsByBuildingAndFloor(int buildingId, int floorNum) throws SQLException {
+        return roomDao.getRoomsByBuildingAndFloor(buildingId, floorNum);
     }
 
 }

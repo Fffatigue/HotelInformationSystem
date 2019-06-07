@@ -1,0 +1,50 @@
+<div id=reportClient1 class="jumbotron text-center">
+
+    <!-- ko foreach: clients -->
+    <table class="table table-striped">
+        <tr>
+            <td><b data-bind="text: clientName"></b></td>
+            <td><b data-bind="text: comment"></b></td>
+        </tr>
+    </table>
+    <!-- /ko -->
+</div>
+
+<script>
+
+    function ReportClient1ViewModel() {
+        var self = this;
+        self.URI = 'http://localhost:8080/clients/my_report/1';
+        self.clients = ko.observableArray();
+
+        self.ajax = function (uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                dataType: 'json',
+                contentType: "application/json",
+                Accept: "application/json",
+                cache: false,
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        }
+
+        self.init = function () {
+            console.log("affwqfwq");
+            self.ajax(self.URI, 'GET').done(function (data) {
+                self.count = data.count;
+                for (var i = 0; i < data.length; i++) {
+                    self.clients.push({
+                        clientName: ko.observable(data[i].clientName),
+                        comment: ko.observable(data[i].comment)
+                    });
+                }
+            })
+        }
+        self.init();
+    }
+
+    var reportClient1ViewModel = new ReportClient1ViewModel();
+    ko.applyBindings(reportClient1ViewModel, $('#reportClient1')[0]);
+</script>

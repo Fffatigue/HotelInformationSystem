@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.FloorId;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Room;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.RoomId;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.model.Service;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -120,6 +121,31 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
     }
 
     @Override
+    public List<Room> getFutureFreeRooms(Date date) throws SQLException{
+        String sql = "select rm.building_id, b.name, rm.floor_num, rm.room_num, rm.price, rm.capacity from reservation rs\n" +
+                "                 inner join room rm on (rm.room_num = rs.room_num and\n" +
+                "                   rm.floor_num = rs.floor_num and \n" +
+                "                   rm.building_id = rs.building_id)\n" +
+                "                 inner join building b on (rm.building_id = b.building_id)\n" +
+                "                 where rs.arrival_date <= ? and\n" +
+                "                  ? <= rs.departure_date and\n" +
+                "                  ? >= rs.departure_date\n" +
+                "                 group by rm.building_id, b.name, rm.floor_num, rm.room_num, rm.price, rm.capacity;";
+
+        Date curDate = new Date(System.currentTimeMillis());
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setDate(1, curDate);
+                statement.setDate(2, curDate);
+                statement.setDate(3, date);
+                ResultSet resultSet = statement.executeQuery();
+                resultSet.next();
+                return parseResultSet(resultSet);
+            }
+        }
+    }
+
+    @Override
     public int getFreeRoomsCount() throws SQLException {
         String sql = "select count(1) as count from(\n" +
                 "    select building_id,floor_num,room_num from room\n" +
@@ -211,6 +237,63 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
         }
     }
 
+    @Override
+    public RoomDao.CurClientInfo getCurClientInfo(RoomId roomId) throws PersistException, SQLException {
+        String sql = "select re.client_id, sr.service_id, sr.name, sr.price from reservation re\n" +
+                " join used_service us on (re.reservation_id = us.reservation_id)\n" +
+                " join service sr on (us.service_id = sr.service_id)\n" +
+                " where re.room_num = ? and\n" +
+                "      re.building_id = ? and\n" +
+                "      re.floor_num = ? and\n" +
+                "      re.arrival_date <= ?  and\n" +
+                "      re.departure_date >= ?;";
+        Date curDate = new Date(System.currentTimeMillis());
+        Integer extraPrice = 0;
+        List<Service> services = new ArrayList<>();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt(1, roomId.getRoomNum() );
+                statement.setInt(2, roomId.getFloorId().getBuildingId() );
+                statement.setInt(3, roomId.getFloorId().getFloorNum() );
+                statement.setDate(4, curDate);
+                statement.setDate(5, curDate);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    Service service = new Service();
+                    Integer price = rs.getInt("price");
+                    extraPrice += price;
+                    service.setPK(rs.getInt("service_id"));
+                    service.setName(rs.getString("name"));
+                    service.setPrice(price);
+                    services.add(service);
+                }
+            }
+        }
+
+        sql = "select rs.client_id, rv.comment from reservation rs\n" +
+                " join review rv on (rv.reservation_id = rs.reservation_id)\n" +
+                " where rs.room_num = ? and\n" +
+                "      rs.building_id = ? and\n" +
+                "      rs.floor_num = ? and\n" +
+                "      rs.arrival_date <= ?  and\n" +
+                "      rs.departure_date >= ?";
+        List<String> complains = new ArrayList<>();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt(1, roomId.getRoomNum() );
+                statement.setInt(2, roomId.getFloorId().getBuildingId() );
+                statement.setInt(3, roomId.getFloorId().getFloorNum() );
+                statement.setDate(4, curDate);
+                statement.setDate(5, curDate);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    complains.add(rs.getString("comment"));
+                }
+            }
+        }
+        return new CurClientInfo(extraPrice, services, complains);
+    }
+
     private List<RoomInfo> parseRoomInfoSet(ResultSet rs) throws SQLException {
         List<RoomInfo> roomInfos = new ArrayList<>();
         while (rs.next()) {
@@ -221,6 +304,71 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
             roomInfo.setPrice( rs.getInt( "price" ) );
         }
         return roomInfos;
+    }
+
+    public List<RoomDao.RoomProfitability> getRoomsProfitability() throws SQLException {
+        String sql = "select tb1.name, tb1.room_num, tb1.building_id, tb1.floor_num, room_sum*100/service_sum as profitability from (\n" +
+                " select buil.name, rs.room_num, rs.building_id, rs.floor_num, sum(sr.price) as service_sum from reservation rs\n" +
+                "  join used_service us on (rs.reservation_id = us.reservation_id)\n" +
+                "  join service sr on (sr.service_id = us.service_id)\n" +
+                "  join building buil on (buil.building_id = rs.building_id)\n" +
+                "  group by buil.name, rs.room_num, rs.building_id, rs.floor_num\n" +
+                " ) tb1\n" +
+                " join (\n" +
+                " select rm.room_num, rm.building_id, rm.floor_num, sum(rm.price) as room_sum from reservation rs\n" +
+                "  join room rm on (rm.room_num = rs.room_num and \n" +
+                "    rm.building_id = rs.building_id and \n" +
+                "    rm.floor_num = rs.floor_num)\n" +
+                "  group by rm.room_num, rm.building_id, rm.floor_num\n" +
+                " ) tb2 on (tb1.room_num = tb2.room_num and \n" +
+                "    tb1.building_id = tb2.building_id and \n" +
+                "    tb1.floor_num = tb2.floor_num)";
+
+        List<RoomProfitability> roomProfitabilities = new ArrayList<>();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    RoomId roomId = new RoomId();
+                    FloorId floorId = new FloorId();
+                    floorId.setBuildingId(rs.getInt("building_id"));
+                    floorId.setFloorNum(rs.getInt("floor_num"));
+                    floorId.setBuildingName(rs.getString("name"));
+                    roomId.setFloorId(floorId);
+                    roomId.setRoomNum(rs.getInt("room_num"));
+                    Integer profitability = rs.getInt("profitability");
+                    roomProfitabilities.add(new RoomProfitability(roomId, profitability));
+                }
+            }
+        }
+        return roomProfitabilities;
+    }
+
+    public List<Room> getRoomsByBuildingAndFloor(int buildingId, int floorNum) throws SQLException {
+        String sql = "SELECT * from room where building_id = ? and floor_num = ?;";
+
+        List<Room> rooms = new ArrayList<>();
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                statement.setInt(1, buildingId);
+                statement.setInt(2, floorNum);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    Room room = new Room();
+                    RoomId roomId = new RoomId();
+                    FloorId floorId = new FloorId();
+                    roomId.setFloorId( floorId );
+                    room.setPK( roomId );
+                    rooms.add( room );
+                    floorId.setBuildingId( rs.getInt( "building_id" ) );
+                    floorId.setFloorNum( rs.getInt( "floor_num" ) );
+                    roomId.setRoomNum( rs.getInt( "room_num" ) );
+                    room.setPrice( rs.getInt( "price" ) );
+                    room.setCapacity( rs.getInt( "capacity" ) );
+                }
+            }
+        }
+        return rooms;
     }
 
     public class RoomInfo {
@@ -260,6 +408,68 @@ public class RoomDao extends AbstractJDBCDao<Room, RoomId> implements IRoomDao {
 
         public void setPrice(int price) {
             this.price = price;
+        }
+    }
+
+    public class CurClientInfo {
+        private Integer extraPrice;
+        private List<Service> services;
+        private List<String> complains;
+
+        public CurClientInfo(Integer extraPrice, List<Service> services, List<String> complains) {
+            this.extraPrice = extraPrice;
+            this.services = services;
+            this.complains = complains;
+        }
+
+        public Integer getExtraPrice() {
+            return extraPrice;
+        }
+
+        public List<Service> getServices() {
+            return services;
+        }
+
+        public List<String> getComplains() {
+            return complains;
+        }
+
+        public void setExtraPrice(Integer extraPrice) {
+            this.extraPrice = extraPrice;
+        }
+
+        public void setServices(List<Service> services) {
+            this.services = services;
+        }
+
+        public void setComplains(List<String> complains) {
+            this.complains = complains;
+        }
+    }
+
+    public class RoomProfitability{
+        private RoomId roomId;
+        private Integer profitability;
+
+        public RoomProfitability(RoomId roomId, Integer profitability) {
+            this.roomId = roomId;
+            this.profitability = profitability;
+        }
+
+        public Integer getProfitability() {
+            return profitability;
+        }
+
+        public RoomId getRoomId() {
+            return roomId;
+        }
+
+        public void setProfitability(Integer profitability) {
+            this.profitability = profitability;
+        }
+
+        public void setRoomId(RoomId roomId) {
+            this.roomId = roomId;
         }
     }
 

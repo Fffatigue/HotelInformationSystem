@@ -29,6 +29,18 @@ app.config(function ($routeProvider) {
             templateUrl: 'pages/buildings.html',
             controller: 'buildingsController'
         })
+        .when('/clients/:pageNum', {
+            templateUrl: 'pages/clients.html',
+            controller: 'clientsController'
+        })
+        .when('/reservations/:pageNum', {
+            templateUrl: 'pages/reservations.html',
+            controller: 'reservationsController'
+        })
+        .when('/reviews/:pageNum', {
+            templateUrl: 'pages/reviews.html',
+            controller: 'reviewsController'
+        })
         //здесь роутинг с параметрами параметры обозначаются :param
         .when('/building/:buildingId/floor/:floorNum/room/:roomNum', {
             templateUrl: 'pages/room.html',
@@ -37,6 +49,18 @@ app.config(function ($routeProvider) {
         .when('/building/:buildingId', {
             templateUrl: 'pages/building.html',
             controller: 'buildingController'
+        })
+        .when('/client/:clientId', {
+            templateUrl: 'pages/client.html',
+            controller: 'clientController'
+        })
+        .when('/review/:reviewId', {
+            templateUrl: 'pages/review.html',
+            controller: 'reviewController'
+        })
+        .when('/reservation/:reservationId', {
+            templateUrl: 'pages/reservation.html',
+            controller: 'reservationController'
         })
         .when('/report/room/2',{
             templateUrl :'pages/report/room2.html'
@@ -49,6 +73,22 @@ app.config(function ($routeProvider) {
         })
         .when('/report/organization/1',{
             templateUrl :'pages/report/organization1.html'
+        })
+        .when('/my_report/client/1',{
+            templateUrl :'pages/report/myclient1.html'
+        })
+
+        .when('/my_report/room/1',{
+            templateUrl :'pages/report/myroom1.html'
+        })
+        .when('/my_report/room/2',{
+            templateUrl :'pages/report/myroom2.html'
+        })
+        .when('/my_report/room/3',{
+            templateUrl :'pages/report/myroom3.html'
+        })
+        .when('/report/reservation/1',{
+            templateUrl :'pages/report/reservations1.html'
         })
 
         // route for the contact page
@@ -73,6 +113,17 @@ app.controller('buildingsController', function ($scope, $routeParams) {
     localStorage.setItem("page", $routeParams.pageNum);
 });
 
+app.controller('clientsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
+
+app.controller('reservationsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
+
+app.controller('reviewsController', function ($scope, $routeParams) {
+    localStorage.setItem("page", $routeParams.pageNum);
+});
 
 app.controller('roomController', function ($scope, $routeParams) {
     $scope.buildingId = $routeParams.buildingId;
@@ -86,6 +137,20 @@ app.controller('buildingController', function ($scope, $routeParams) {
     localStorage.setItem("buildingId", $routeParams.buildingId);
 });
 
+app.controller('clientController', function ($scope, $routeParams) {
+    $scope.clientId = $routeParams.clientId;
+    localStorage.setItem("clientId", $routeParams.clientId);
+});
+
+app.controller('reservationController', function ($scope, $routeParams) {
+    $scope.reservationId = $routeParams.reservationId;
+    localStorage.setItem("reservationId", $routeParams.reservationId);
+});
+
+app.controller('reviewController', function ($scope, $routeParams) {
+    $scope.reviewId = $routeParams.reviewId;
+    localStorage.setItem("reviewId", $routeParams.reviewId);
+});
 
 app.controller('contactController', function ($scope) {
     $scope.message = 'Contact us! JK. This is just a demo.';

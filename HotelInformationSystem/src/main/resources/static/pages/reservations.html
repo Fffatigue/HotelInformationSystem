@@ -1,17 +1,21 @@
-<div id="rooms" class="container">
-    <input data-bind="value: search" type="text" placeholder="Search"
-           style="width: 150px;">
+<div id="reservations" class="container">
     <!--тут мы задаем таблицу с комнатами-->
     <table class="table table-striped">
         <!--первый столбик - название полей, дата бинд нужен для сортировки, айди тоже-->
-        <tr data-bind="click: sortFunction">
-            <td id="name"><b>Hotel name</b></td>
-            <td id="room_num"><b>Room</b></td>
-            <td id="options"><b>Options</b></td>
+        <tr>
+            <td><b>Client name</b></td>
+            <td><b>Arrival date</b></td>
+            <td><b>Departure date</b></td>
+            <td><b>Hotel name</b></td>
+            <td><b>Room</b></td>
+            <td><b>Options</b></td>
         </tr>
         <!--остальные столбики foreach проходит по массиву rooms, и мы перечисляем названия полей, которые нужно вывести или методы, которые нужно использовать-->
-        <!-- ko foreach: rooms -->
+        <!-- ko foreach: reservations -->
         <tr>
+            <td><b data-bind="text: clientName"></b></td>
+            <td><b data-bind="text: arrival"></b></td>
+            <td><b data-bind="text: departure"></b></td>
             <td><b data-bind="text: buildingName"></b></td>
             <td><p><b>Room number </b> <span data-bind="text: roomNum"></span></p>
                 <p><b>Floor number </b><span data-bind="text: floorNum"></span></p></td>
@@ -24,7 +28,7 @@
     </table>
 
     <!--кнопка добавления комнаты-->
-    <button data-bind="click: beginAdd" class="btn">Add Room</button>
+    <button data-bind="click: beginAdd" class="btn">Add Reservation</button>
 
     <!--ну это кнопочки со страницами тоже foreach по массиву с номерами страниц-->
     <div class="w3-center">
@@ -42,15 +46,29 @@
 </div>
 
 <!--это окно которое по умолчанию невидимое с добавлением комнаты-->
-<div id="addRoom" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+<div id="addReservation" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
      aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="addDialogLabel">Add Room</h3>
+        <h3 id="addDialogLabel">Add Reservation</h3>
     </div>
     <div class="modal-body">
 
         <form class="form-horizontal">
+            <!--это вывести список зданий, опшионс - массив зданий,
+            опшионстекс - поле объекта массива, которое должно показываться,
+            вэлью - выбранный объект, опшионс капшион - то что показывается когда никто не выбран-->
+            <div class="control-group">
+                <label class="control-label" for="inputClient">Client</label>
+                <div class="controls">
+                    <select data-bind="options: clients,
+                                    optionsText: 'clientName',
+                                    value:selectedClient,
+                                    optionsCaption: 'Choose...'" id="inputClient" style="width: 150px;"></select>
+                    <button data-bind="click: beginAddClient" class="btn">Add Client</button>
+                </div>
+            </div>
+
             <!--это вывести список зданий, опшионс - массив зданий, опшионстекс - поле объекта массива, которое должно показываться, вэлью - выбранный объект, опшионс капшион - то что показывается когда никто не выбран-->
             <div class="control-group">
                 <label class="control-label" for="inputBuilding">Building</label>
@@ -75,30 +93,33 @@
                 </div>
             </div>
 
-            <!--поле ввода для номера комнаты - плейсхолдер это то что показывается пока значение не введено,
-            айди это чтобы лейбл рядом поставить, вэлью - переменная куда значение сохранится-->
+            <!--это то же самое что и для зданий, только для комнат-->
             <div class="control-group">
-                <label class="control-label" for="inputRoom">Room</label>
+                <label class="control-label" for="inputFloor">Room</label>
                 <div class="controls">
-                    <input data-bind="value: roomNum" type="text" id="inputRoom" placeholder="Room number"
-                           style="width: 150px;">
+                    <select data-bind="options: rooms,
+                            optionsText: 'roomNum',
+                    value:selectedRoom,
+                    optionsCaption: 'Choose...'" id="inputRoom" style="width: 150px;"></select>
+                    <button data-bind="click: beginAddRoom" class="btn">Add Room</button>
                 </div>
             </div>
 
+            <p style="font-size: 30px"><b>Date format : yyyy-mm-dd</b></p>
             <!--то же самое что и для номера комнаты, только для цены-->
             <div class="control-group">
-                <label class="control-label" for="inputPrice">Price</label>
+                <label class="control-label" for="inputArrival">Arrival</label>
                 <div class="controls">
-                    <input data-bind="value: price" type="text" id="inputPrice" placeholder="Price"
+                    <input data-bind="value: arrival" type="text" id="inputArrival" placeholder="Arrival"
                            style="width: 150px;">
                 </div>
             </div>
 
             <!--то же самое что и для номера комнаты только для вместительности-->
             <div class="control-group">
-                <label class="control-label" for="inputCapacity">Capacity</label>
+                <label class="control-label" for="inputDeparture">Departure</label>
                 <div class="controls">
-                    <input data-bind="value: capacity" type="text" id="inputCapacity" placeholder="Capacity"
+                    <input data-bind="value: departure" type="text" id="inputDeparture" placeholder="Departure"
                            style="width: 150px;">
                 </div>
             </div>
@@ -106,6 +127,70 @@
         </form>
     </div>
     <!--тут кнопки аддрум которая вызывает метод addRoom и кансел, которая скрывает окно просто, но введенные данные не удаляются, а остаются в этом окне-->
+    <div class="modal-footer">
+        <button data-bind="click: addReservation" class="btn btn-primary">Add Reservation</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<div id="addClient" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addClientDialogLabel">Add Client</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputClientC">Client</label>
+                <div class="controls">
+                    <input data-bind="value: clientName" type="text" id="inputClientC" placeholder="Client name"
+                           style="width: 150px;">
+                </div>
+
+                <label class="control-label" for="inputDiscountD">Discount</label>
+                <div class="controls">
+                    <input data-bind="value: discount" type="text" id="inputDiscountD" placeholder="Discount"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addClient" class="btn btn-primary">Add Client</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+
+<div id="addRoom" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="addRoomDialogLabel">Add Room</h3>
+    </div>
+    <div class="modal-body">
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputRoomR">Room</label>
+                <div class="controls">
+                    <input data-bind="value: roomNum" type="text" id="inputRoomR" placeholder="Room number"
+                           style="width: 150px;">
+                </div>
+                <label class="control-label" for="inputPrice">Price</label>
+                <div class="controls">
+                    <input data-bind="value: price" type="text" id="inputPrice" placeholder="Price"
+                           style="width: 150px;">
+                </div>
+                <label class="control-label" for="inputCapacity">Capacity</label>
+                <div class="controls">
+                    <input data-bind="value: capacity" type="text" id="inputCapacity" placeholder="Room number"
+                           style="width: 150px;">
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="modal-footer">
         <button data-bind="click: addRoom" class="btn btn-primary">Add Room</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
@@ -162,36 +247,13 @@
 
 <script>
     /*в скрипте 2 модели используются. Одна для таблицы, вторая для всплывающего окна*/
-    function RoomsViewModel() {
+    function ReservationsViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
 
-        /*сортировка*/
-        self.sortBy = 'room_num';
-        self.sortAsc = true;
-
-        this.sortFunction = function () {
-            if (event.target.id === '' || event.target.id === 'options') {
-                return
-            }
-            if (self.sortBy === event.target.id)
-                self.sortAsc = !self.sortAsc;
-            else {
-                self.sortBy = event.target.id;
-                self.sortAsc = true;
-            }
-
-            self.init();
-        }
-
         /*инициализация массивов*/
-        self.rooms = ko.observableArray();
+        self.reservations = ko.observableArray();
         self.pagination = ko.observableArray();
-
-        self.search = ko.observable();
-        self.search.subscribe(function () {
-            self.init();
-        })
 
         /*задаем метод для работы с рест под названием ajax*/
         self.ajax = function (uri, method, data) {
@@ -209,20 +271,19 @@
 
         /*задаем метод beginAdd для кнопки адд, который делает окно добавление комнаты видимым*/
         self.beginAdd = function () {
-            $('#addRoom').modal('show');
+            $('#addReservation').modal('show');
         }
 
         /*задаем метод beginDetails для кнопки детэйлс, которая связана с комнатой, которая делает редирект на страницу
          выбранной комнаты*/
-        self.beginDetails = function (room) {
-            var href = '#/building/' + room.buildingId() + '/floor/' + room.floorNum() + '/room/' + room.roomNum();
+        self.beginDetails = function (reservation) {
+            var href = '#/reservation/' + reservation.reservationId();
             window.location = href
         }
 
         /*задаем метод адд, который отправляет рест запрос на добавление, при удачном добавлении обновляем страницу*/
-        self.add = function (room) {
-            self.ajax(self.URI + 'rooms/building/' + room.buildingId() + '/floor/' +
-                room.floorNum() + '/room/' + room.roomNum(), 'POST', room).done(function (data) {
+        self.add = function (reservation) {
+            self.ajax(self.URI + 'reservations/id/', 'POST', reservation).done(function (data) {
                 $('#addRoom').modal('hide');
                 self.init();
             }).error(function (xhr, thrownError) {
@@ -232,9 +293,8 @@
 
         /*задаем метод удаления комнаты, после удачного удаления смотрим новое количество страниц и то на какой мы странице,
          если нужно переходим на другую страницу, иначе перезагружаем эту*/
-        self.remove = function (room) {
-            self.ajax(self.URI + 'rooms/building/' + Number(room.buildingId()) + '/floor/' +
-                room.floorNum() + '/room/' + room.roomNum(), 'DELETE'
+        self.remove = function (reservation) {
+            self.ajax(self.URI + 'reservations/id/' + reservation.reservationId(), 'DELETE'
             ).done(function (data) {
                 if (data < localStorage.getItem("page")) {
                     localStorage.setItem("page", data);
@@ -252,54 +312,42 @@
 
 
         self.init = function () {
-            self.rooms([]);
+            self.reservations([]);
             self.pagination([]);
-
-            if (self.search() === '' || self.search() === undefined) {
-                /*инициализация массива страниц*/
-                self.ajax(self.URI + 'rooms/page', 'GET').done(function (data) {
-                    for (var i = 1; i <= data; i++) {
-                        self.pagination.push({
-                            pageNum: ko.observable(i),
-                            isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
-                        })
-                    }
-                })
+            /*инициализация массива страниц*/
+            self.ajax(self.URI + 'reservations/page', 'GET').done(function (data) {
+                for (var i = 1; i <= data; i++) {
+                    self.pagination.push({
+                        pageNum: ko.observable(i),
+                        isCurrentPage: ko.observable(i === Number(localStorage.getItem("page")))
+                    })
+                }
+            })
 
 
-                /*инициализация массива комнат*/
-                self.ajax(self.URI + 'rooms/page/' + localStorage.getItem("page") + '?' + 'sortBy=' +
-                    self.sortBy + '&sortAsc=' + self.sortAsc, 'GET'
-                ).done(function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        self.rooms.push({
-                            roomNum: ko.observable(data[i].pk.roomNum),
-                            floorNum: ko.observable(data[i].pk.floorId.floorNum),
-                            buildingName: ko.observable(data[i].pk.floorId.buildingName),
-                            buildingId: ko.observable(data[i].pk.floorId.buildingId)
-                        });
-                    }
-                });
-            } else {
-                /*инициализация массива комнат*/
-                self.ajax(self.URI + 'rooms/filter/' + self.search() + '?' + 'sortBy=' +
-                    self.sortBy + '&sortAsc=' + self.sortAsc, 'GET').done(function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        self.rooms.push({
-                            roomNum: ko.observable(data[i].pk.roomNum),
-                            floorNum: ko.observable(data[i].pk.floorId.floorNum),
-                            buildingName: ko.observable(data[i].pk.floorId.buildingName),
-                            buildingId: ko.observable(data[i].pk.floorId.buildingId)
-                        });
-                    }
-                });
-            }
+            /*инициализация массива комнат*/
+            self.ajax(self.URI + 'reservations/page/' + localStorage.getItem("page"), 'GET'
+            ).done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.reservations.push({
+                        roomNum: ko.observable(data[i].roomId.roomNum),
+                        floorNum: ko.observable(data[i].roomId.floorId.floorNum),
+                        buildingName: ko.observable(data[i].roomId.floorId.buildingName),
+                        buildingId: ko.observable(data[i].roomId.floorId.buildingId),
+                        clientId: ko.observable(data[i].clientId),
+                        clientName: ko.observable(data[i].clientName),
+                        arrival: ko.observable(data[i].arrivalDate),
+                        departure: ko.observable(data[i].departureDate),
+                        reservationId: ko.observable(data[i].pk)
+                    });
+                }
+            });
         }
 
         self.init();
     }
 
-    function AddRoomViewModel() {
+    function AddReservationViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
         self.ajax = function (uri, method, data) {
@@ -316,9 +364,29 @@
         }
 
         /*инициализация переменных в которые будут поступать входные данные*/
-        self.roomNum = ko.observable();
-        self.price = ko.observable();
-        self.capacity = ko.observable();
+        self.arrival = ko.observable();
+        self.departure = ko.observable();
+
+
+        self.clients = ko.observableArray();
+        self.selectedClient = ko.observable();
+        self.ajax(self.URI + 'clients/page/1', 'GET').done(function (data) {
+            for (var i = 0; i < data.length; i++) {
+                self.clients.push({
+                    clientName: ko.observable(data[i].name),
+                    clientId: ko.observable(data[i].pk)
+                })
+            }
+        })
+        self.ajax(self.URI + 'organizations/page/1', 'GET').done(function (data) {
+            for (var i = 0; i < data.length; i++) {
+                self.clients.push({
+                    clientName: ko.observable(data[i].name),
+                    clientId: ko.observable(data[i].pk)
+                })
+            }
+        })
+
 
         /*инициализация массива зданий, который используются в выпадающих списках, а так же переменной для выбранного здания*/
         self.buildings = ko.observableArray();
@@ -345,36 +413,74 @@
             self.ajax(self.URI + 'floors/building/' + newBuilding.buildingId(), 'GET').done(function (data) {
                 for (var i = 0; i < data.length; i++) {
                     self.floors.push({
-                        floorNum: ko.observable(data[i].pk.floorNum)
+                        floorNum: ko.observable(data[i].pk.floorNum),
+                        buildingId: newBuilding.buildingId
                     })
                 }
             })
         })
 
+        self.rooms = ko.observableArray();
+        self.selectedRoom = ko.observable();
+
+        self.selectedFloor.subscribe(function (newFloor) {
+            self.rooms.removeAll();
+            self.ajax(self.URI + 'rooms/building/' + newFloor.buildingId() + '/floor/' + newFloor.floorNum(), 'GET').done(function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    self.rooms.push({
+                        roomNum: ko.observable(data[i].pk.roomNum)
+                    })
+                }
+            })
+        })
+
+
         /*метод аддрум вызывает метод адд у другой модели с целью отправки запроса на добавление комнат,
          а потом чистит переменные, чтобы при следующем нажатии на кнопку адд не было старых значений*/
-        self.addRoom = function () {
-            roomsViewModel.add({
-                roomNum: self.roomNum,
-                floorNum: self.selectedFloor().floorNum,
-                buildingId: self.selectedBuilding().buildingId,
-                price: self.price(),
-                capacity: self.capacity()
+        self.addReservation = function () {
+            reservationsViewModel.add({
+                roomId : {
+                    roomNum: self.selectedRoom().roomNum(),
+                    floorId: {
+                        floorNum: self.selectedFloor().floorNum(),
+                        buildingId: self.selectedBuilding().buildingId()
+                    }
+                },
+                clientId: self.selectedClient().clientId(),
+                arrivalDate: self.arrival(),
+                departureDate: self.departure()
             });
-            self.roomNum();
-            self.capacity();
-            self.price();
+            self.arrival();
+            self.departure();
+            self.clients();
+            self.rooms();
             self.floors();
             self.buildings();
+            self.selectedClient();
+            self.selectedRoom(),
             self.selectedBuilding();
             self.selectedFloor();
         }
+
+        self.addRoom = function (room) {
+            self.ajax(self.URI + 'rooms/building/' + self.selectedBuilding().buildingId() +
+                '/floor/' + self.selectedFloor().floorNum() + '/room' + room.roomNum(), 'POST', room)
+                .done(function (data) {
+                    self.rooms.push({
+                        roomNum: ko.observable(room.roomNum())
+                    })
+                }).error(function (xhr, thrownError) {
+                alert(JSON.parse(xhr.responseText).message);
+            });
+        }
+
         /*метод для добавления этажей*/
         self.addFloor = function (floor) {
-            self.ajax(self.URI + 'floors/building/' + self.selectedBuilding().buildingId() + '/floor/' + floor.floorNum(), 'POST', floor)
+            self.ajax(self.URI + 'floors/building/' + self.selectedBuilding().buildingId() + '/floor/' + floor.floorNum, 'POST', floor)
                 .done(function (data) {
                     self.floors.push({
-                        floorNum: ko.observable(floor.floorNum())
+                        floorNum: ko.observable(floor.floorNum),
+                        buildingId: self.selectedBuilding().buildingId()
                     })
                 }).error(function (xhr, thrownError) {
                 alert(JSON.parse(xhr.responseText).message);
@@ -394,6 +500,38 @@
             });
         }
 
+        self.addClient = function (client, isClient) {
+            if (isClient){
+                self.ajax(self.URI + 'clients/', 'POST', client)
+                    .done(function (data) {
+                        self.clients.push({
+                            clientName: ko.observable(client.name()),
+                            clientId: ko.observable(client.clientId)
+                        })
+                    }).error(function (xhr, thrownError) {
+                    alert(JSON.parse(xhr.responseText).message);
+                });
+            } else {
+                self.ajax(self.URI + 'organizations/', 'POST', client)
+                    .done(function (data) {
+                        self.clients.push({
+                            clientName: ko.observable(client.name()),
+                            clientId: ko.observable(client.clientId)
+                        })
+                    }).error(function (xhr, thrownError) {
+                    alert(JSON.parse(xhr.responseText).message);
+                });
+            }
+        }
+
+        self.beginAddRoom = function () {
+            if (!(self.selectedBuilding() === undefined) && !(self.selectedFloor() === undefined)) {
+                $('#addRoom').modal('show');
+            } else {
+                alert('Select building and floor')
+            }
+        }
+
         /*метод для того чтобы сделать окно добавления этажей видимым*/
         self.beginAddFloor = function () {
             if (!(self.selectedBuilding() === undefined)) {
@@ -406,6 +544,29 @@
         self.beginAddBuilding = function () {
             $('#addBuilding').modal('show');
         }
+
+        self.beginAddClient = function () {
+            $('#addClient').modal('show');
+        }
+    }
+
+    function AddRoomViewModel() {
+        var self = this;
+        self.roomNum = ko.observable();
+        self.price = ko.observable();
+        self.capacity = ko.observable();
+
+        self.addRoom = function () {
+            addReservationViewModel.addRoom({
+                roomNum: self.roomNum(),
+                price: self.price(),
+                capacity: self.capacity()
+            });
+            self.floorNum();
+            self.price();
+            self.capacity();
+            $('#addRoom').modal('hide');
+        }
     }
 
     /*модель добавления этажей*/
@@ -414,8 +575,8 @@
         self.floorNum = ko.observable();
 
         self.addFloor = function () {
-            addRoomViewModel.addFloor({
-                floorNum: self.floorNum,
+            addReservationViewModel.addFloor({
+                floorNum: self.floorNum(),
             });
             self.floorNum();
             $('#addFloor').modal('hide');
@@ -427,7 +588,7 @@
         self.buildingName = ko.observable();
 
         self.addBuilding = function () {
-            addRoomViewModel.addBuilding({
+            addReservationViewModel.addBuilding({
                 name: self.buildingName(),
             });
             self.buildingName();
@@ -435,13 +596,39 @@
         }
     }
 
+    function AddClientViewModel() {
+        var self = this;
+        self.clientName = ko.observable();
+        self.discount = ko.observable("");
+
+        self.addClient = function () {
+            if (self.discount() === ""){
+                addReservationViewModel.addClient({
+                    name: self.clientName()
+                }, true);
+            } else {
+                addReservationViewModel.addClient({
+                    name: self.clientName(),
+                    discount: self.discount()
+                }, false);
+            }
+            self.clientName();
+            $('#addClient').modal('hide');
+        }
+    }
+
     /*здесь мы инициализируем используемые модели*/
-    var roomsViewModel = new RoomsViewModel();
+    var reservationsViewModel = new ReservationsViewModel();
+    var addReservationViewModel = new AddReservationViewModel();
+    var addClientViewModel = new AddClientViewModel();
     var addRoomViewModel = new AddRoomViewModel();
     var addFloorViewModel = new AddFloorViewModel();
     var addBuildingViewModel = new AddBuildingViewModel();
+    ko.applyBindings(addClientViewModel, $('#addClient')[0]);
+    ko.applyBindings(addRoomViewModel, $('#addRoom')[0]);
     ko.applyBindings(addFloorViewModel, $('#addFloor')[0]);
     ko.applyBindings(addBuildingViewModel, $('#addBuilding')[0]);
-    ko.applyBindings(roomsViewModel, $('#rooms')[0]);
-    ko.applyBindings(addRoomViewModel, $('#addRoom')[0]);
+    ko.applyBindings(reservationsViewModel, $('#reservations')[0]);
+    ko.applyBindings(addReservationViewModel, $('#addReservation')[0]);
+
 </script>

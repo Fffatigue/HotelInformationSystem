@@ -2,6 +2,7 @@ package ru.nsu.fit.bd.g16203.hotelInformationSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.ClientDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.IClientDao;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.PersistException;
 import ru.nsu.fit.bd.g16203.hotelInformationSystem.dao.WrongDataException;
@@ -50,5 +51,10 @@ public class ClientService implements IClientService {
     @Override
     public List<Client> getAllReservedRoomsInPeriodWithParams(int capacity, int price, LocalDate beginDate, LocalDate endDate) throws PersistException, SQLException {
         return clientDao.getAllReservedRoomsInPeriodWithParams( capacity, price, beginDate, endDate );
+    }
+
+    @Override
+    public List<ClientDao.ClientComment> getAngryComments() throws PersistException, SQLException{
+        return clientDao.getAngryComments();
     }
 }

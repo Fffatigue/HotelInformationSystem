@@ -1,10 +1,10 @@
-<div id="buildings" class="container">
+<div id="clients" class="container">
     <table class="table table-striped">
         <tr>
-            <td><b>Hotel name</b></td>
+            <td><b>Client name</b></td>
             <td><b>Options</b></td>
         </tr>
-        <!-- ko foreach: buildings -->
+        <!-- ko foreach: clients -->
         <tr>
             <td><b data-bind="text: name"></b></td>
             <td>
@@ -14,7 +14,7 @@
         </tr>
         <!-- /ko -->
     </table>
-    <button data-bind="click: beginAdd" class="btn">Add Building</button>
+    <button data-bind="click: beginAdd" class="btn">Add Client</button>
 
     <div class="w3-center">
         <div id="pagination" class="w3-bar">
@@ -30,37 +30,37 @@
     </div>
 </div>
 
-<div id="addBuilding" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
+<div id="addClient" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel"
      aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="addDialogLabel">Add Building</h3>
+        <h3 id="addDialogLabel">Add Client</h3>
     </div>
     <div class="modal-body">
 
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="inputBuilding">Building</label>
+                <label class="control-label" for="inputClient">Client</label>
                 <div class="controls">
-                    <input data-bind="value: buildingName" type="text" id="inputBuilding" placeholder="Building name"
+                    <input data-bind="value: clientName" type="text" id="inputClient" placeholder="Client name"
                            style="width: 150px;">
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <button data-bind="click: addBuilding" class="btn btn-primary">Add Building</button>
+        <button data-bind="click: addClient" class="btn btn-primary">Add Client</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
 
 <script>
-    function BuildingsViewModel() {
+    function ClientsViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
-        self.buildings = ko.observableArray();
+        self.clients = ko.observableArray();
         self.pagination = ko.observableArray();
-
+        console.log("check")
         self.ajax = function (uri, method, data) {
             var request = {
                 url: uri,
@@ -75,40 +75,39 @@
         }
 
         self.beginAdd = function () {
-            $('#addBuilding').modal('show');
+            $('#addClient').modal('show');
         }
 
-        self.beginDetails = function (building) {
-            var href = '#/building/' + building.buildingId();
+        self.beginDetails = function (client) {
+            var href = '#/client/' + client.clientId();
             window.location = href
         }
 
-        self.add = function (building) {
-            self.ajax(self.URI + 'buildings/', 'POST', building).done(function (data) {
+        self.add = function (client) {
+            self.ajax(self.URI + 'clients/', 'POST', client).done(function (data) {
                 window.location.reload();
             });
         }
 
-        self.remove = function (building) {
-            self.ajax(self.URI + 'buildings/id/' + building.buildingId(), 'DELETE'
+        self.remove = function (client) {
+            self.ajax(self.URI + 'clients/id/' + client.clientId(), 'DELETE'
             ).done(function (data) {
                 if (data < localStorage.getItem("page")) {
-                    var href = '#/buildings/' + Number(data);
+                    var href = '#/clients/' + Number(data);
                     window.location = href;
                 } else {
                     window.location.reload();
                 }
-
             });
         }
 
         self.showPage = function (page) {
-            var href = '#/buildings/' + page.pageNum();
+            var href = '#/clients/' + page.pageNum();
             window.location = href;
         }
 
 
-        self.ajax(self.URI + 'buildings/page', 'GET').done(function (data) {
+        self.ajax(self.URI + 'clients/page', 'GET').done(function (data) {
             for (var i = 1; i <= data; i++) {
                 self.pagination.push({
                     pageNum: ko.observable(i),
@@ -117,17 +116,17 @@
             }
         })
 
-        self.ajax(self.URI + 'buildings/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
+        self.ajax(self.URI + 'clients/page/' + localStorage.getItem("page"), 'GET').done(function (data) {
             for (var i = 0; i < data.length; i++) {
-                self.buildings.push({
+                self.clients.push({
                     name: ko.observable(data[i].name),
-                    buildingId: ko.observable(data[i].pk)
+                    clientId: ko.observable(data[i].pk)
                 });
             }
         });
     }
 
-    function AddBuildingViewModel() {
+    function AddClientViewModel() {
         var self = this;
         self.URI = 'http://localhost:8080/';
         self.ajax = function (uri, method, data) {
@@ -143,20 +142,20 @@
             return $.ajax(request);
         }
 
-        self.buildingName = ko.observable();
+        self.clientName = ko.observable();
 
-        self.addBuilding = function () {
-            $('#addBuilding').modal('hide');
-            buildingsViewModel.add({
-                name: self.buildingName()
+        self.addClient = function () {
+            $('#addClient').modal('hide');
+            clientsViewModel.add({
+                name: self.clientName()
 
             });
-            self.buildingName();
+            self.clientName();
         }
     }
 
-    var buildingsViewModel = new BuildingsViewModel();
-    var addBuildingViewModel = new AddBuildingViewModel();
-    ko.applyBindings(buildingsViewModel, $('#buildings')[0]);
-    ko.applyBindings(addBuildingViewModel, $('#addBuilding')[0]);
+    var clientsViewModel = new ClientsViewModel();
+    var addClientViewModel = new AddClientViewModel();
+    ko.applyBindings(clientsViewModel, $('#clients')[0]);
+    ko.applyBindings(addClientViewModel, $('#addClient')[0]);
 </script>

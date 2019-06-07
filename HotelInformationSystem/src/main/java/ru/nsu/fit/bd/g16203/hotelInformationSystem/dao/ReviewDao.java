@@ -20,13 +20,13 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
 
     @Override
     public String getCreateQuery() {
-        return "INSERT INTO review (review_id, score, comment, reservation_id) \n" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?);";
+        return "INSERT INTO review (score, comment, reservation_id) \n" +
+                "VALUES (?, ?, ?);";
     }
 
     @Override
     public String getUpdateQuery() {
-        return "UPDATE review SET score = ? comment = ? reservation_id = ? WHERE review_id = ?;";
+        return "UPDATE review SET score = ?, comment = ?, reservation_id = ? WHERE review_id = ?;";
     }
 
     @Override
@@ -54,10 +54,9 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
 
     @Override
     protected void prepareStatementForInsert(PreparedStatement statement, Review obj) throws SQLException {
-        statement.setInt(1, obj.getPK());
-        statement.setInt(2, obj.getScore());
-        statement.setString(3, obj.getComment());
-        statement.setInt(4, obj.getReservationId());
+        statement.setInt(1, obj.getScore());
+        statement.setString(2, obj.getComment());
+        statement.setInt(3, obj.getReservationId());
     }
 
     @Override
@@ -99,5 +98,66 @@ public class ReviewDao extends AbstractJDBCDao<Review, Integer> implements IRevi
             reviews.add(review);
         }
         return reviews;
+    }
+
+    public List<Review> getAllSort(String sortBy, Boolean sortAsc, int page) throws SQLException {
+        String order = sortAsc ? "asc" : "desc";
+        String sort = sortBy.equals("score") ? "score": "comment";
+        String sql = "SELECT * from review\n" +
+                " order by " + sort + " " + order + " LIMIT " + ROWS_PER_PAGE + " OFFSET " + String.valueOf( (page - 1) * ROWS_PER_PAGE );
+        try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+            try (PreparedStatement statement = c.prepareStatement( sql )) {
+                ResultSet rs = statement.executeQuery();
+                return parseResultSet(rs);
+            }
+        }
+    }
+
+    public List<Review> getAllFilter(String sortBy, Boolean sortAsc, String comment, Integer score) throws SQLException {
+        String order = sortAsc ? "asc" : "desc";
+        String sort = sortBy.equals("score") ? "score": "comment";
+        String comm = "%" + comment + "%";
+        String sql;
+        if (comment.equals("lol") && score.equals(0)) {
+            sql = "SELECT * from review\n" +
+                    " order by " + sort + " " + order;try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+                try (PreparedStatement statement = c.prepareStatement( sql )) {
+                    ResultSet rs = statement.executeQuery();
+                    return parseResultSet(rs);
+                }
+            }
+        } else if (comment.equals("lol")) {
+            sql = "SELECT * from review\n" +
+                    " where score = ? " +
+                    " order by " + sort + " " + order;
+            try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+                try (PreparedStatement statement = c.prepareStatement( sql )) {
+                    statement.setInt(1, score);
+                    ResultSet rs = statement.executeQuery();
+                    return parseResultSet(rs);
+                }
+            }
+        } else if (score.equals(0)) {
+            sql = "SELECT * from review\n" +
+                    " where comment like '" + comm + "' " +
+                    " order by " + sort + " " + order;
+            try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+                try (PreparedStatement statement = c.prepareStatement( sql )) {
+                    ResultSet rs = statement.executeQuery();
+                    return parseResultSet(rs);
+                }
+            }
+        } else {
+            sql = "SELECT * from review\n" +
+                    " where score = ? and comment like '" + comm + "' " +
+                    " order by "  + sort + " " + order;
+            try (Connection c = jdbcTemplate.getDataSource().getConnection()) {
+                try (PreparedStatement statement = c.prepareStatement( sql )) {
+                    statement.setInt(1, score);
+                    ResultSet rs = statement.executeQuery();
+                    return parseResultSet(rs);
+                }
+            }
+        }
     }
 }
